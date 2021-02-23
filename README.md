@@ -15,8 +15,8 @@ npm install --global syte
 syte [command]
 
 Commands:
-  cli.js new [path]    Generate new syte project
-  cli.js build [path]  Compile syte project into a static site
+  syte new [path]    Generate new syte project
+  syte build [path]  Compile syte project into a static site
 
 Options:
   --version  Show version number                                       [boolean]
@@ -27,7 +27,7 @@ Options:
 
 ```
 > syte new --help
-cli.js new [path]
+syte new [path]
 
 Generate new syte project
 
