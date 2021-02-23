@@ -1,7 +1,7 @@
 {
   "name": "syte",
   "version": "0.0.1",
-  "description": "Static site generator",
+  "description": "Minimalist static site generator. It works, and that's about it.",
   "main": "dist/commands.js",
   "author": "Ben Reinhart",
   "license": "MIT",
