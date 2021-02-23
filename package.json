@@ -6,7 +6,7 @@
   "author": "Ben Reinhart",
   "license": "MIT",
   "bin": {
-    "syte": "./dist/cli.js"
+    "syte": "dist/cli.js"
   },
   "scripts": {
     "build": "tsc --outDir dist",
