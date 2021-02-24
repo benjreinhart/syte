@@ -1,9 +1,7 @@
 import path from "path";
 import ejs from "ejs";
 import marked from "marked";
-import siteJsonTemplate from "./templates/site.json";
-import indexMdTemplate from "./templates/index.md";
-import layoutEjsTemplate from "./templates/layout.ejs";
+import templates from "./templates";
 import { ejsEscapeFn, htmlSafe } from "./utils";
 import fs from "./fs";
 import { ContextType } from "./types";
@@ -22,20 +20,7 @@ async function cmdNew(argv: NewCmdArgvType) {
     fs.mkdirp(path.join(projectPath, "layouts")),
   ]);
 
-  const filesToCreate = {
-    "site.json": siteJsonTemplate({ title: projectName }),
-    [`layouts${path.sep}main.ejs`]: layoutEjsTemplate(),
-    [`pages${path.sep}index.md`]: indexMdTemplate(),
-  };
-
-  await Promise.all(
-    Object.entries(filesToCreate).map(async ([fileName, template]) => {
-      const filePath = path.join(projectPath, fileName);
-      if (!(await fs.exists(filePath))) {
-        await fs.write(filePath, template);
-      }
-    })
-  );
+  await templates.default.create(projectPath, projectName);
 }
 
 interface BuildCmdArgvType {
@@ -46,17 +31,17 @@ interface BuildCmdArgvType {
 async function cmdBuild(argv: BuildCmdArgvType) {
   const projectPath = path.resolve(argv.path);
 
-  const siteContextPath = path.join(projectPath, "site.json");
-  if (!(await fs.exists(siteContextPath))) {
-    console.error(`Cannot find site context at ${siteContextPath}`);
+  const appContextPath = path.join(projectPath, "app.json");
+  if (!(await fs.exists(appContextPath))) {
+    console.error(`Cannot find app context at ${appContextPath}`);
     process.exit(1);
   }
-  const siteContextStr = await fs.read(path.join(projectPath, "site.json"));
-  const siteContext = JSON.parse(siteContextStr);
+  const appContextStr = await fs.read(appContextPath);
+  const appContext = JSON.parse(appContextStr);
 
-  const layoutPath = path.join(projectPath, "layouts", "main.ejs");
+  const layoutPath = path.join(projectPath, "layouts", "app.ejs");
   if (!(await fs.exists(layoutPath))) {
-    console.error(`Cannot find main layout at ${layoutPath}`);
+    console.error(`Cannot find app layout at ${layoutPath}`);
     process.exit(1);
   }
   const layout = await fs.read(layoutPath);
@@ -79,7 +64,7 @@ async function cmdBuild(argv: BuildCmdArgvType) {
     const rawPageContents = await page.contents();
 
     const context: ContextType = {
-      site: siteContext,
+      app: appContext,
       pages: pages,
       body: "",
       page: pageContext,

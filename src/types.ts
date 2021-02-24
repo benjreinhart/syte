@@ -10,7 +10,7 @@ export interface ToStringType {
 }
 
 export type ContextType = {
-  site: object;
+  app: object;
   body: ToStringType;
   pages: PageType[];
   page: object;

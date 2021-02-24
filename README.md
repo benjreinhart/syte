@@ -22,16 +22,16 @@ This will create a new project called `mysite` with the following directory stru
 ```
 mysite
 ├── layouts
-│   └── main.ejs
+│   └── app.ejs
 ├── pages
 │   └── index.md
-└── site.json
+└── app.json
 ```
 
 Note:
 
-* The `layouts` directory, `pages` directory, and `site.json` file are mandatory.
-* `site.json` can contain any arbitrary context you want and will be available in the ejs files.
+* The `layouts` directory, `pages` directory, and `app.json` file are mandatory.
+* `app.json` can contain any arbitrary context you want and will be available in the ejs files.
 * The `pages` directory can contain any number markdown (`.md`) or ejs (`.ejs`) files.
 * Pages can be nested arbitrarily deep. Their URLs will be the path to the file relative to the `pages` directory.
 
@@ -51,13 +51,13 @@ The resulting directory now looks like the following:
 ```
 mysite
 ├── layouts
-│   └── main.ejs
+│   └── app.ejs
 ├── pages
 │   ├── blog
 │   │   ├── index.ejs
 │   │   └── my-post.md
 │   └── index.md
-└── site.json
+└── app.json
 ```
 
 In our `pages/blog/index.ejs` page, we want to render a list of links to all blog posts:
@@ -93,13 +93,13 @@ Note that front matter is supported (using the code block notation with `json`) 
 And, finally, we want to compile the source into static files:
 
 ```
-$ syte build --outputPath dist
+$ syte build
 ```
 
-This will output a directory called `dist` into the current working directory with the following structure:
+This will output a directory called `build` (the default, but can be changed with `-o` option) into the current working directory with the following structure:
 
 ```
-dist
+build
 ├── blog
 │   ├── my-post
 │   │   └── index.html
