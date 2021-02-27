@@ -9,9 +9,9 @@ export interface ToStringType {
   toString(): string;
 }
 
-export type ContextType = {
-  app: object;
-  body: ToStringType;
+export interface SyteType {
   pages: PageType[];
-  page: object;
-};
+  body: ToStringType | null;
+}
+
+export type ContextType = object & { $: SyteType };

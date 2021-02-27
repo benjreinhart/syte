@@ -1,6 +1,6 @@
 # syte
 
-Syte is a minimalist static site generator. It works, and that's about it.
+Syte is a minimalist static site generator.
 
 Syte compiles [ejs](https://ejs.co) and [markdown](https://www.markdownguide.org) files into static HTML files.
 
@@ -64,7 +64,7 @@ In our `pages/blog/index.ejs` page, we want to render a list of links to all blo
 
 ```ejs
 <ul>
-<% for (const page of pages) { %>
+<% for (const page of $.pages) { %>
 <% if (/\/blog\/.+/.test(page.urlPath)) { %>
   <li>
     <a href="<%= page.urlPath %>"><%= page.urlPath %></a>
@@ -88,7 +88,7 @@ And in our `pages/blog/my-post.md` we want to write a blog post:
 This is my post.
 ````
 
-Note that front matter is supported (using the code block notation with `json`) and will be available to the layout as the identifier `page`.
+Note that front matter is supported (using the code block notation with `json`) and will be available in the `ejs` files.
 
 And, finally, we want to compile the source into static files:
 

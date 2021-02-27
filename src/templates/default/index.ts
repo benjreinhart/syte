@@ -9,10 +9,10 @@ function appLayout() {
   return `<!DOCTYPE html>
 <html lang="en-us">
   <head>
-    <title><%= page.title || app.title %></title>
+    <title><%= title %></title>
   </head>
   <body>
-    <%= body %>
+    <%= $.body %>
   </body>
 </html>
 `;
