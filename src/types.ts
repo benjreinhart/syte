@@ -1,13 +1,13 @@
-export interface PageType {
+export interface PageFileType {
   absoluteFilePath: string;
-  relativeFilePath: string;
   urlPath: string;
-  relativeOutputDirPath: string;
 }
 
 export interface ToStringType {
   toString(): string;
 }
+
+export type PageType = object;
 
 export interface SyteType {
   pages: PageType[];

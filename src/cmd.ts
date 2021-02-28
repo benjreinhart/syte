@@ -5,7 +5,7 @@ import templates from "./templates";
 import { ejsEscapeFn, htmlSafe, shallowMerge } from "./utils";
 import fs from "./fs";
 import { ContextType } from "./types";
-import Page from "./Page";
+import PageFile from "./PageFile";
 
 interface NewCmdArgvType {
   path: string;
@@ -52,32 +52,44 @@ async function cmdBuild(argv: BuildCmdArgvType) {
     console.error(`Cannot find pages at ${projectPagesPath}`);
     process.exit(1);
   }
-  const pages = pagePaths.map((absoluteFilePath) => {
-    return new Page(projectPagesPath, absoluteFilePath);
+  const pageFiles = pagePaths.map((absoluteFilePath) => {
+    return new PageFile(projectPagesPath, absoluteFilePath);
   });
+  const pageFileLoads = pageFiles.map((pf) => pf.load());
+  await Promise.all(pageFileLoads);
+
+  const pagesContextsByUrlPath = pageFiles.reduce((accum, pageFile) => {
+    accum[pageFile.urlPath] = shallowMerge(pageFile.context, { urlPath: pageFile.urlPath });
+    return accum;
+  }, {} as { [urlPath: string]: object });
+  const pageContexts = Object.values(pagesContextsByUrlPath);
 
   const outputPath = path.resolve(argv.outputPath);
   await fs.mkdirp(outputPath);
 
-  for await (const page of pages) {
-    const pageContext = await page.context();
-    const rawPageContents = await page.contents();
+  for await (const pageFile of pageFiles) {
+    const pageContext = pagesContextsByUrlPath[pageFile.urlPath];
 
-    const context: ContextType = shallowMerge(appContext, pageContext, { $: { pages } });
+    const context: ContextType = shallowMerge(appContext, pageContext, {
+      $: { pages: pageContexts },
+    });
 
-    if (page.isMarkdown()) {
-      const compiledPageContents = marked(rawPageContents);
+    if (pageFile.isMarkdown()) {
+      const compiledPageContents = marked(pageFile.contents);
       context.$.body = htmlSafe(compiledPageContents);
-    } else if (page.isEjs()) {
-      const compiledPageContents = ejs.render(rawPageContents, context);
+    } else if (pageFile.isEjs()) {
+      const compiledPageContents = ejs.render(pageFile.contents, context, {
+        escape: ejsEscapeFn,
+        rmWhitespace: true,
+      });
       context.$.body = htmlSafe(compiledPageContents);
     }
 
-    const pageOutputDirPath = path.join(outputPath, page.relativeOutputDirPath);
+    const pageOutputDirPath = path.join(outputPath, pageFile.urlPath);
     await fs.mkdirp(pageOutputDirPath);
 
     const filePath = path.join(pageOutputDirPath, "index.html");
-    const pageContents = ejs.render(layout, context, { escape: ejsEscapeFn });
+    const pageContents = ejs.render(layout, context, { escape: ejsEscapeFn, rmWhitespace: true });
     await fs.write(filePath, pageContents);
   }
 }
