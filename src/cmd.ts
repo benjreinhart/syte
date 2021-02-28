@@ -2,7 +2,7 @@ import path from "path";
 import ejs from "ejs";
 import marked from "marked";
 import templates from "./templates";
-import { ejsEscapeFn, htmlSafe, shallowMerge } from "./utils";
+import { shallowMerge } from "./utils";
 import fs from "./fs";
 import { ContextType } from "./types";
 import PageFile from "./PageFile";
@@ -76,20 +76,19 @@ async function cmdBuild(argv: BuildCmdArgvType) {
 
     if (pageFile.isMarkdown()) {
       const compiledPageContents = marked(pageFile.contents);
-      context.$.body = htmlSafe(compiledPageContents);
+      context.$.body = compiledPageContents;
     } else if (pageFile.isEjs()) {
       const compiledPageContents = ejs.render(pageFile.contents, context, {
-        escape: ejsEscapeFn,
         rmWhitespace: true,
       });
-      context.$.body = htmlSafe(compiledPageContents);
+      context.$.body = compiledPageContents;
     }
 
     const pageOutputDirPath = path.join(outputPath, pageFile.urlPath);
     await fs.mkdirp(pageOutputDirPath);
 
     const filePath = path.join(pageOutputDirPath, "index.html");
-    const pageContents = ejs.render(layout, context, { escape: ejsEscapeFn, rmWhitespace: true });
+    const pageContents = ejs.render(layout, context, { rmWhitespace: true });
     await fs.write(filePath, pageContents);
   }
 }

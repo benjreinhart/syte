@@ -12,7 +12,7 @@ function appLayout() {
     <title><%= title %></title>
   </head>
   <body>
-    <%= $.body %>
+    <%- $.body %>
   </body>
 </html>
 `;
