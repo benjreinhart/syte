@@ -1,4 +1,4 @@
-import fm from "../fm";
+import fm from "../src/fm";
 
 const noFrontMatter = `# Heading 1
 
