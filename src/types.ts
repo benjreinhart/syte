@@ -1,12 +1,20 @@
-export interface ToStringType {
-  toString(): string;
-}
+export type FileType = {
+  path: string;
+  contents: string;
+};
 
-export type PageType = object & { urlPath: string };
+export type ObjectType = { [key: string]: any };
+
+export type PageType = {
+  filePath: string;
+  urlPath: string;
+  context: ObjectType;
+  contents: string;
+};
 
 export interface SyteType {
   pages: PageType[];
-  body: ToStringType | null;
+  body: string | null;
 }
 
-export type ContextType = object & { $: SyteType };
+export type ContextType = ObjectType & { $: SyteType };
