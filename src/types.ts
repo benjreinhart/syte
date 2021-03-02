@@ -1,13 +1,8 @@
-export interface PageFileType {
-  absoluteFilePath: string;
-  urlPath: string;
-}
-
 export interface ToStringType {
   toString(): string;
 }
 
-export type PageType = object;
+export type PageType = object & { urlPath: string };
 
 export interface SyteType {
   pages: PageType[];

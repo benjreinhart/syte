@@ -1,10 +1,9 @@
 import path from "path";
 import fm from "./fm";
 import fs from "./fs";
-import { PageFileType } from "./types";
 import { shallowMerge } from "./utils";
 
-export default class PageFile implements PageFileType {
+export default class PageFile {
   readonly absoluteFilePath: string;
   readonly urlPath: string;
 
