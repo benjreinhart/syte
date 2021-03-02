@@ -1,7 +1,6 @@
 import path from "path";
 import fm from "./fm";
 import fs from "./fs";
-import { shallowMerge } from "./utils";
 
 export default class PageFile {
   readonly absoluteFilePath: string;
