@@ -26,6 +26,7 @@ async function cmdNew(argv: NewCmdArgvType) {
 interface BuildCmdArgvType {
   path: string;
   outputPath: string;
+  environment: string;
 }
 
 async function cmdBuild(argv: BuildCmdArgvType) {
@@ -71,7 +72,7 @@ async function cmdBuild(argv: BuildCmdArgvType) {
     const pageContext = pagesContextsByUrlPath[pageFile.urlPath];
 
     const context: ContextType = shallowMerge(appContext, pageContext, {
-      $: { pages: pageContexts },
+      $: { pages: pageContexts, environment: argv.environment },
     });
 
     if (pageFile.isMarkdown()) {

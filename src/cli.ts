@@ -25,6 +25,11 @@ yargs(process.argv.slice(2))
           default: ".",
         })
         .options({
+          environment: {
+            alias: "e",
+            describe: "Build environment",
+            default: "production",
+          },
           outputPath: {
             alias: "o",
             describe: "Path where syte site will be written",
