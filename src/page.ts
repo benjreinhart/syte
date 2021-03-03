@@ -33,7 +33,7 @@ export default {
     const filePath = file.path;
     const urlPath = constructUrlPath(projectPagesPath, file.path);
     const [context, contents] = fm.parse(file.contents);
-    return { filePath, urlPath, context, contents };
+    return Object.freeze({ filePath, urlPath, context, contents });
   },
 
   isMarkdown(page: PageType) {

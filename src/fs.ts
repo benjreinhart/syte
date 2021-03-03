@@ -17,14 +17,17 @@ export default {
     return fs.readFile(path, { encoding: "utf8" });
   },
 
-  readAll(paths: string[]): Promise<FileType[]> {
+  readAll(paths: string[]) {
     const read = (path: string) => {
-      return new Promise((resolve) => {
-        this.read(path).then((contents) => resolve({ path, contents }));
+      return new Promise<FileType>((resolve) => {
+        this.read(path).then((contents) => {
+          const file = Object.freeze({ path, contents });
+          return resolve(file);
+        });
       });
     };
 
-    return Promise.all(paths.map(read)) as Promise<FileType[]>;
+    return Promise.all(paths.map(read));
   },
 
   glob(pattern: string) {

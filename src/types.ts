@@ -1,16 +1,18 @@
-export type FileType = {
-  path: string;
-  contents: string;
+export type ObjectType = {
+  [key: string]: any;
 };
 
-export type ObjectType = { [key: string]: any };
+export interface FileType {
+  readonly path: string;
+  readonly contents: string;
+}
 
-export type PageType = {
-  filePath: string;
-  urlPath: string;
-  context: ObjectType;
-  contents: string;
-};
+export interface PageType {
+  readonly filePath: string;
+  readonly urlPath: string;
+  readonly context: ObjectType;
+  readonly contents: string;
+}
 
 export interface SyteType {
   pages: PageType[];
