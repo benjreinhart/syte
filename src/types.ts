@@ -3,15 +3,23 @@ export type ObjectType = {
 };
 
 export interface FileType {
-  readonly path: string;
-  readonly contents: string;
+  path: string;
+  contents: string;
 }
 
-export interface PageType {
-  readonly filePath: string;
-  readonly urlPath: string;
-  readonly context: ObjectType;
-  readonly contents: string;
+export interface ConfigType {
+  layout: string | void;
+}
+
+export type UserData = {
+  config: ConfigType;
+  context: ObjectType;
+};
+
+export interface PageType extends UserData {
+  filePath: string;
+  urlPath: string;
+  contents: string;
 }
 
 export interface SyteType {

@@ -1,6 +1,7 @@
 import path from "path";
 import fm from "./fm";
 import { FileType, PageType } from "./types";
+import userData from "./user_data";
 
 function constructUrlPath(projectPagesPath: string, filePath: string) {
   const relativeFilePath = path.relative(projectPagesPath, filePath);
@@ -32,8 +33,9 @@ export default {
   create(projectPagesPath: string, file: FileType): PageType {
     const filePath = file.path;
     const urlPath = constructUrlPath(projectPagesPath, file.path);
-    const [context, contents] = fm.parse(file.contents);
-    return Object.freeze({ filePath, urlPath, context, contents });
+    const [object, contents] = fm.parse(file.contents);
+    const data = userData.create(object);
+    return Object.freeze({ filePath, urlPath, contents, ...data });
   },
 
   isMarkdown(page: PageType) {

@@ -1,9 +1,10 @@
+import { ObjectType } from "./types";
 import { isBlank } from "./utils";
 
 const FM_OPEN_TAG_RE = /^```json\s*$/;
 const FM_CLOSE_TAG_RE = /^```\s*/;
 
-function parse(text: string): [object, string] {
+function parse(text: string): [ObjectType, string] {
   const lines = text.split("\n");
   const linesLength = lines.length;
   const fmLines = [];

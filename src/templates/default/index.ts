@@ -1,8 +1,15 @@
 import path from "path";
 import fs from "../../fs";
 
-function appContext(projectName: string) {
-  return JSON.stringify({ title: projectName }, null, 2);
+function appData(projectName: string, layoutName: string) {
+  const data = {
+    $: {
+      layout: layoutName,
+    },
+    title: projectName,
+  };
+
+  return JSON.stringify(data, null, 2);
 }
 
 function appLayout() {
@@ -40,9 +47,9 @@ async function create(projectPath: string, projectName: string) {
   return Promise.all(
     [
       async () => {
-        const appContextPath = path.join(projectPath, "app.json");
-        if (!(await fs.exists(appContextPath))) {
-          await fs.write(appContextPath, appContext(projectName));
+        const appDataPath = path.join(projectPath, "app.json");
+        if (!(await fs.exists(appDataPath))) {
+          await fs.write(appDataPath, appData(projectName, "app"));
         }
       },
       async () => {

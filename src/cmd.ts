@@ -6,6 +6,7 @@ import { shallowMerge } from "./utils";
 import fs from "./fs";
 import { ContextType } from "./types";
 import page from "./page";
+import userData from "./user_data";
 
 interface NewCmdArgvType {
   path: string;
@@ -39,13 +40,15 @@ async function cmdBuild(argv: BuildCmdArgvType) {
   }
   const appContextStr = await fs.read(appContextPath);
   const appContext = JSON.parse(appContextStr);
+  const appData = userData.create(appContext);
 
-  const layoutPath = path.join(projectPath, "layouts", "app.ejs");
-  if (!(await fs.exists(layoutPath))) {
-    console.error(`Cannot find app layout at ${layoutPath}`);
+  const layoutsPath = path.join(projectPath, "layouts");
+  const layoutPaths = await fs.glob(`${layoutsPath}/**/*.ejs`);
+  if (layoutPaths.length === 0) {
+    console.error(`Cannot find layouts at ${layoutsPath}`);
     process.exit(1);
   }
-  const layout = await fs.read(layoutPath);
+  const layoutFiles = await fs.readAll(layoutPaths);
 
   const projectPagesPath = path.join(projectPath, "pages");
   const pagePaths = await fs.glob(`${projectPagesPath}/**/*.(ejs|md)`);
@@ -61,26 +64,36 @@ async function cmdBuild(argv: BuildCmdArgvType) {
   const outputPath = path.resolve(argv.outputPath);
   await fs.mkdirp(outputPath);
 
-  for await (const pageObject of pages) {
-    const context: ContextType = shallowMerge(appContext, pageObject.context, {
+  for await (const pageData of pages) {
+    const context: ContextType = shallowMerge(appData.context, pageData.context, {
       $: { pages: pages, environment: argv.environment },
     });
 
-    if (page.isMarkdown(pageObject)) {
-      const compiledPageContents = marked(pageObject.contents);
+    if (page.isMarkdown(pageData)) {
+      const compiledPageContents = marked(pageData.contents);
       context.$.body = compiledPageContents;
-    } else if (page.isEjs(pageObject)) {
-      const compiledPageContents = ejs.render(pageObject.contents, context, {
+    } else if (page.isEjs(pageData)) {
+      const compiledPageContents = ejs.render(pageData.contents, context, {
         rmWhitespace: true,
       });
       context.$.body = compiledPageContents;
     }
 
-    const pageOutputDirPath = path.join(outputPath, pageObject.urlPath);
+    const layoutName = pageData.config.layout || appData.config.layout;
+    const layoutFile = layoutFiles.find((f) => {
+      const relativePath = path.relative(layoutsPath, f.path).replace(/\.ejs$/, "");
+      return relativePath === layoutName;
+    });
+    if (!layoutFile) {
+      throw new Error(`${layoutName} layout doesn't exist`);
+    }
+
+    const pageContents = ejs.render(layoutFile.contents, context, { rmWhitespace: true });
+
+    const pageOutputDirPath = path.join(outputPath, pageData.urlPath);
     await fs.mkdirp(pageOutputDirPath);
 
     const filePath = path.join(pageOutputDirPath, "index.html");
-    const pageContents = ejs.render(layout, context, { rmWhitespace: true });
     await fs.write(filePath, pageContents);
   }
 }
