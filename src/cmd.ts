@@ -64,7 +64,7 @@ async function cmdBuild(argv: BuildCmdArgvType) {
   const outputPath = path.resolve(argv.outputPath);
   await fs.mkdirp(outputPath);
 
-  for await (const pageData of pages) {
+  const promises = pages.map(async (pageData) => {
     const context: ContextType = shallowMerge(appData.context, pageData.context, {
       $: { pages: pages, environment: argv.environment },
     });
@@ -95,7 +95,9 @@ async function cmdBuild(argv: BuildCmdArgvType) {
 
     const filePath = path.join(pageOutputDirPath, "index.html");
     await fs.write(filePath, pageContents);
-  }
+  });
+
+  await Promise.all(promises);
 }
 
 export default {
