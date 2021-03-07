@@ -7,6 +7,7 @@ import fs from "./fs";
 import { ContextType } from "./types";
 import page from "./page";
 import userData from "./user_data";
+import syte from "./syte";
 
 interface NewCmdArgvType {
   path: string;
@@ -17,8 +18,9 @@ async function cmdNew(argv: NewCmdArgvType) {
   const projectName = path.basename(projectPath);
 
   await Promise.all([
-    fs.mkdirp(path.join(projectPath, "pages")),
+    fs.mkdirp(path.join(projectPath, "assets")),
     fs.mkdirp(path.join(projectPath, "layouts")),
+    fs.mkdirp(path.join(projectPath, "pages")),
   ]);
 
   await templates.default.create(projectPath, projectName);
@@ -64,40 +66,52 @@ async function cmdBuild(argv: BuildCmdArgvType) {
   const outputPath = path.resolve(argv.outputPath);
   await fs.mkdirp(outputPath);
 
-  const promises = pages.map(async (pageData) => {
-    const context: ContextType = shallowMerge(appData.context, pageData.context, {
-      $: { pages: pages, environment: argv.environment },
-    });
-
-    if (page.isMarkdown(pageData)) {
-      const compiledPageContents = marked(pageData.contents);
-      context.$.body = compiledPageContents;
-    } else if (page.isEjs(pageData)) {
-      const compiledPageContents = ejs.render(pageData.contents, context, {
-        rmWhitespace: true,
+  const buildPages = () => {
+    return pages.map(async (pageData) => {
+      const context: ContextType = shallowMerge(appData.context, pageData.context, {
+        $: syte(
+          pages,
+          argv.environment,
+          argv.environment === "development" ? path.join(projectPath, "assets") : "/assets"
+        ),
       });
-      context.$.body = compiledPageContents;
-    }
 
-    const layoutName = pageData.config.layout || appData.config.layout;
-    const layoutFile = layoutFiles.find((f) => {
-      const relativePath = path.relative(layoutsPath, f.path).replace(/\.ejs$/, "");
-      return relativePath === layoutName;
+      if (page.isMarkdown(pageData)) {
+        const compiledPageContents = marked(pageData.contents);
+        context.$.body = compiledPageContents;
+      } else if (page.isEjs(pageData)) {
+        const compiledPageContents = ejs.render(pageData.contents, context, {
+          rmWhitespace: true,
+        });
+        context.$.body = compiledPageContents;
+      }
+
+      const layoutName = pageData.config.layout || appData.config.layout;
+      const layoutFile = layoutFiles.find((f) => {
+        const relativePath = path.relative(layoutsPath, f.path).replace(/\.ejs$/, "");
+        return relativePath === layoutName;
+      });
+      if (!layoutFile) {
+        throw new Error(`${layoutName} layout doesn't exist`);
+      }
+
+      const pageContents = ejs.render(layoutFile.contents, context, { rmWhitespace: true });
+
+      const pageOutputDirPath = path.join(outputPath, pageData.urlPath);
+      await fs.mkdirp(pageOutputDirPath);
+
+      const filePath = path.join(pageOutputDirPath, "index.html");
+      await fs.write(filePath, pageContents);
     });
-    if (!layoutFile) {
-      throw new Error(`${layoutName} layout doesn't exist`);
-    }
+  };
 
-    const pageContents = ejs.render(layoutFile.contents, context, { rmWhitespace: true });
+  const copyStaticAssets = () => {
+    const source = path.join(projectPath, "assets");
+    const destination = path.join(outputPath, "assets");
+    return fs.copy(source, destination);
+  };
 
-    const pageOutputDirPath = path.join(outputPath, pageData.urlPath);
-    await fs.mkdirp(pageOutputDirPath);
-
-    const filePath = path.join(pageOutputDirPath, "index.html");
-    await fs.write(filePath, pageContents);
-  });
-
-  await Promise.all(promises);
+  await Promise.all([copyStaticAssets(), ...buildPages()]);
 }
 
 export default {

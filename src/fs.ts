@@ -1,5 +1,6 @@
 import fs from "fs/promises";
 import fg from "fast-glob";
+import { ncp } from "ncp";
 import { constants } from "fs";
 import { FileType } from "./types";
 
@@ -40,5 +41,13 @@ export default {
 
   mkdirp(path: string) {
     return fs.mkdir(path, { recursive: true });
+  },
+
+  copy(source: string, destination: string) {
+    return new Promise<void>((resolve, reject) => {
+      ncp(source, destination, (errors) => {
+        return errors !== null ? reject(errors) : resolve();
+      });
+    });
   },
 };
