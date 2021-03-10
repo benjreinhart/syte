@@ -25,15 +25,16 @@ mysite
 │   └── app.ejs
 ├── pages
 │   └── index.md
-└── app.json
+└── app.yaml
 ```
 
 Note:
 
-* The `layouts` directory, `pages` directory, and `app.json` file are mandatory.
-* `app.json` can contain any arbitrary context you want and will be available in the ejs files.
+* The `layouts` directory, `pages` directory, and `app.yaml` file are mandatory.
+* `app.yaml` can contain any arbitrary context you want and will be available in the ejs files.
 * The `pages` directory can contain any number markdown (`.md`) or ejs (`.ejs`) files.
 * Pages can be nested arbitrarily deep. Their URLs will be the path to the file relative to the `pages` directory.
+* Pages are able to supply context and configuration via front matter (yaml with leading and trailing `---`). This context will be merged against the global context defined in `app.yaml`.
 
 Let's say we want to add some blog pages to our site with the following urls:
 
@@ -64,7 +65,7 @@ In our `pages/blog/index.ejs` page, we want to render a list of links to all blo
 
 ```ejs
 <ul>
-<% for (const page of $.pages) { %>
+<% for (const page of pages) { %>
 <% if (/\/blog\/.+/.test(page.urlPath)) { %>
   <li>
     <a href="<%= page.urlPath %>"><%= page.urlPath %></a>
@@ -76,19 +77,15 @@ In our `pages/blog/index.ejs` page, we want to render a list of links to all blo
 
 And in our `pages/blog/my-post.md` we want to write a blog post:
 
-````md
-```json
-{
-  "title": "My post"
-}
-```
+```md
+---
+title: My post
+---
 
 # My Post
 
 This is my post.
-````
-
-Note that front matter is supported (using the code block notation with `json`) and will be available in the `ejs` files.
+```
 
 And, finally, we want to compile the source into static files:
 
