@@ -1,5 +1,6 @@
 import path from "path";
 import fs from "../../fs";
+import yaml from "js-yaml";
 
 function appData(projectName: string, layoutName: string) {
   const data = {
@@ -7,7 +8,7 @@ function appData(projectName: string, layoutName: string) {
     title: projectName,
   };
 
-  return JSON.stringify(data, null, 2);
+  return yaml.dump(data);
 }
 
 function appLayout() {
@@ -24,11 +25,9 @@ function appLayout() {
 }
 
 function indexPage() {
-  return `\`\`\`json
-{
-  "title": "Index Page"
-}
-\`\`\`
+  return `---
+title: Index Page
+---
 # Index page
 
 This is the index page.
@@ -45,7 +44,7 @@ async function create(projectPath: string, projectName: string) {
   return Promise.all(
     [
       async () => {
-        const appDataPath = path.join(projectPath, "app.json");
+        const appDataPath = path.join(projectPath, "app.yaml");
         if (!(await fs.exists(appDataPath))) {
           await fs.write(appDataPath, appData(projectName, "app"));
         }
