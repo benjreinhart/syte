@@ -109,25 +109,22 @@ async function readAllPages(projectPagesPath: string, pagesPath: string[]) {
 }
 
 function renderPage(
+  page: PageType,
   appContext: ObjectType,
   layouts: LayoutType[],
-  pages: PageType[],
-  pageData: PageType
+  pages: PageType[]
 ) {
-  const context: ContextType = shallowMerge(appContext, pageData.context, {
-    pages,
-    assetPath,
-  });
+  const context: ContextType = shallowMerge(appContext, page.context, { pages, assetPath });
 
-  if (isMarkdown(pageData)) {
-    const compiledPageContents = marked(pageData.contents);
+  if (isMarkdown(page)) {
+    const compiledPageContents = marked(page.contents);
     context.body = compiledPageContents;
-  } else if (isEjs(pageData)) {
-    const compiledPageContents = ejs.render(pageData.contents, context);
+  } else if (isEjs(page)) {
+    const compiledPageContents = ejs.render(page.contents, context);
     context.body = compiledPageContents;
   }
 
-  const layoutName = pageData.context.layout || appContext.layout;
+  const layoutName = page.context.layout || appContext.layout;
   const layout = layouts.find((layout) => layout.name === layoutName);
   if (!layout) {
     throw new Error(`${layoutName} layout doesn't exist`);
@@ -242,12 +239,12 @@ async function cmdServe(argv: ServeCmdArgvType) {
     }
 
     const urlPath = url.pathname === "/" ? url.pathname : url.pathname.replace(/\/+$/, "");
-    const requestedPage = syte.pages.find((page) => page.urlPath === urlPath);
-    if (requestedPage === undefined) {
+    const page = syte.pages.find((page) => page.urlPath === urlPath);
+    if (page === undefined) {
       return null;
     }
 
-    return renderPage(syte.app, syte.layouts, syte.pages, requestedPage);
+    return renderPage(page, syte.app, syte.layouts, syte.pages);
   });
 }
 
@@ -286,9 +283,9 @@ async function cmdBuild(argv: BuildCmdArgvType) {
   await fs.mkdirp(outputPath);
 
   const buildPages = () => {
-    return pages.map(async (pageData) => {
-      const pageContents = renderPage(appContext, layouts, pages, pageData);
-      const pageOutputDirPath = path.join(outputPath, pageData.urlPath);
+    return pages.map(async (page) => {
+      const pageContents = renderPage(page, appContext, layouts, pages);
+      const pageOutputDirPath = path.join(outputPath, page.urlPath);
       await fs.mkdirp(pageOutputDirPath);
       const filePath = path.join(pageOutputDirPath, "index.html");
       await fs.write(filePath, pageContents);
