@@ -1,10 +1,11 @@
 import path from "path";
 import ejs from "ejs";
 import marked from "marked";
+import yaml from "js-yaml";
 import templates from "./templates";
-import { shallowMerge } from "./utils";
+import { isBlank, isObject, shallowMerge } from "./utils";
 import fs from "./fs";
-import { ContextType } from "./types";
+import { ContextType, ObjectType } from "./types";
 import page from "./page";
 
 const URI_RE = new RegExp("^[-a-z]+://|^(?:cid|data):|^//");
@@ -43,13 +44,17 @@ interface BuildCmdArgvType {
 async function cmdBuild(argv: BuildCmdArgvType) {
   const projectPath = path.resolve(argv.path);
 
-  const appContextPath = path.join(projectPath, "app.json");
+  const appContextPath = path.join(projectPath, "app.yaml");
   if (!(await fs.exists(appContextPath))) {
     console.error(`Cannot find app context at ${appContextPath}`);
     process.exit(1);
   }
   const appContextStr = await fs.read(appContextPath);
-  const appContext = JSON.parse(appContextStr);
+  const appContextValue = isBlank(appContextStr) ? {} : yaml.load(appContextStr);
+  if (!isObject(appContextValue)) {
+    throw new Error("app.yaml must define an object");
+  }
+  const appContext = appContextValue as ObjectType;
 
   const layoutsPath = path.join(projectPath, "layouts");
   const layoutPaths = await fs.glob(`${layoutsPath}/**/*.ejs`);

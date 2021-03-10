@@ -1,8 +1,9 @@
 import { ObjectType } from "./types";
-import { isBlank } from "./utils";
+import { isBlank, isObject } from "./utils";
+import yaml from "js-yaml";
 
-const FM_OPEN_TAG_RE = /^```json\s*$/;
-const FM_CLOSE_TAG_RE = /^```\s*/;
+const FM_OPEN_TAG_RE = /^---\s*$/;
+const FM_CLOSE_TAG_RE = /^---\s*$/;
 
 function parse(text: string): [ObjectType, string] {
   const lines = text.split("\n");
@@ -43,9 +44,13 @@ function parse(text: string): [ObjectType, string] {
 
   const contents = contentLines.join("\n");
   const contextStr = fmLines.join("\n");
-  const context = isBlank(contextStr) ? {} : JSON.parse(contextStr);
+  const context = isBlank(contextStr) ? {} : yaml.load(contextStr);
 
-  return [context, contents];
+  if (!isObject(context)) {
+    throw new Error(`Front matter must be an object but found: ${context}`);
+  }
+
+  return [context as ObjectType, contents];
 }
 
 export default { parse };

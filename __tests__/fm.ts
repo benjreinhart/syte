@@ -5,43 +5,41 @@ const noFrontMatter = `# Heading 1
 Paragraph text.
 `;
 
-const emptyFrontMatterContent = `\`\`\`json
-\`\`\`
+const emptyFrontMatterContent = `---
+---
 # Heading 1
 
 Paragraph text.
 `;
 
-const whitespaceFrontMatterContent = `\`\`\`json
+const whitespaceFrontMatterContent = `---
 
-\`\`\`
+---
 # Heading 1
 
 Paragraph text.
 `;
 
-const frontMatterWithoutClosingTag = `\`\`\`json
+const frontMatterWithoutClosingTag = `---
 
 # Heading 1
 
 Paragraph text.
 `;
 
-const invalidFrontMatterContent = `\`\`\`json
-invalid json
-\`\`\`
+const invalidFrontMatterContent = `---
+non-object
+---
 # Heading 1
 
 Paragraph text.
 `;
 
-const validFrontMatter = `\`\`\`json
-{
-  "title": "My page",
-  "layout": "blog.ejs",
-  "arbitraryKey": "arbitrary value"
-}
-\`\`\`
+const validFrontMatter = `---
+title: My page
+layout: blog
+arbitraryKey: arbitrary value
+---
 # Heading 1
 
 Paragraph text.
@@ -74,15 +72,15 @@ describe("fm.parse", () => {
 
   it("throws an error when front matter content is invalid", () => {
     expect(() => {
-      fm.parse(invalidFrontMatterContent);
-    }).toThrow(/^Unexpected token/);
+      console.log(fm.parse(invalidFrontMatterContent));
+    }).toThrow(/^Front matter must be an object/);
   });
 
   it("parses valid front matter", () => {
     const [frontMatter, contents] = fm.parse(validFrontMatter);
     expect(frontMatter).toEqual({
       title: "My page",
-      layout: "blog.ejs",
+      layout: "blog",
       arbitraryKey: "arbitrary value",
     });
     expect(contents).toEqual("# Heading 1\n\nParagraph text.\n");
