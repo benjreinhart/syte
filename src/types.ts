@@ -7,20 +7,19 @@ export interface FileType {
   contents: string;
 }
 
-export interface ConfigType {
-  layout: string | void;
+export interface LayoutType extends FileType {
+  name: string;
 }
 
-export interface PageType {
-  filePath: string;
+export interface PageType extends FileType {
   urlPath: string;
-  contents: string;
   context: ObjectType;
 }
 
 export interface SyteType {
+  app: ObjectType;
+  layouts: LayoutType[];
   pages: PageType[];
-  body: string | null;
 }
 
-export type ContextType = ObjectType & { $: SyteType };
+export type ContextType = ObjectType;

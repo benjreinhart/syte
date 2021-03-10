@@ -1,6 +1,5 @@
 import { ObjectType } from "./types";
-import { isBlank, isObject } from "./utils";
-import yaml from "js-yaml";
+import { loadYamlObject } from "./utils";
 
 const FM_OPEN_TAG_RE = /^---\s*$/;
 const FM_CLOSE_TAG_RE = /^---\s*$/;
@@ -44,13 +43,13 @@ function parse(text: string): [ObjectType, string] {
 
   const contents = contentLines.join("\n");
   const contextStr = fmLines.join("\n");
-  const context = isBlank(contextStr) ? {} : yaml.load(contextStr);
 
-  if (!isObject(context)) {
-    throw new Error(`Front matter must be an object but found: ${context}`);
+  try {
+    const context = loadYamlObject(contextStr);
+    return [context, contents];
+  } catch (e) {
+    throw new Error(`Front matter must be a yaml object but found: ${contextStr}`);
   }
-
-  return [context as ObjectType, contents];
 }
 
 export default { parse };

@@ -73,7 +73,7 @@ describe("fm.parse", () => {
   it("throws an error when front matter content is invalid", () => {
     expect(() => {
       console.log(fm.parse(invalidFrontMatterContent));
-    }).toThrow(/^Front matter must be an object/);
+    }).toThrow(/^Front matter must be a yaml object/);
   });
 
   it("parses valid front matter", () => {

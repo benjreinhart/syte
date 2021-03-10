@@ -19,10 +19,6 @@ export default {
     return Object.freeze({ filePath, contents });
   },
 
-  readAll(paths: string[]) {
-    return Promise.all(paths.map(this.read));
-  },
-
   glob(pattern: string) {
     return fg(pattern);
   },

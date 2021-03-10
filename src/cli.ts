@@ -16,6 +16,25 @@ yargs(process.argv.slice(2))
     handler: cmd.new,
   })
   .command({
+    command: "serve [path]",
+    describe: "Serve the given syte project",
+    builder: (yargs: Argv) => {
+      return yargs
+        .positional("path", {
+          describe: "Path to the root directory of syte project",
+          default: ".",
+        })
+        .options({
+          port: {
+            alias: "p",
+            describe: "Port to serve on",
+            default: 3500,
+          },
+        });
+    },
+    handler: cmd.serve,
+  })
+  .command({
     command: "build [path]",
     describe: "Compile syte project into a static site",
     builder: (yargs: Argv) => {
@@ -25,11 +44,6 @@ yargs(process.argv.slice(2))
           default: ".",
         })
         .options({
-          environment: {
-            alias: "e",
-            describe: "Build environment",
-            default: "production",
-          },
           outputPath: {
             alias: "o",
             describe: "Path where syte site will be written",

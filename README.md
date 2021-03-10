@@ -21,6 +21,7 @@ This will create a new project called `mysite` with the following directory stru
 
 ```
 mysite
+├── assets
 ├── layouts
 │   └── app.ejs
 ├── pages
@@ -30,7 +31,7 @@ mysite
 
 Note:
 
-* The `layouts` directory, `pages` directory, and `app.yaml` file are mandatory.
+* The `layouts` directory, `pages` directory, and `app.yaml` file are mandatory. The `assets` is where you can put any static assets. This entire folder will be copied as is for the production build.
 * `app.yaml` can contain any arbitrary context you want and will be available in the ejs files.
 * The `pages` directory can contain any number markdown (`.md`) or ejs (`.ejs`) files.
 * Pages can be nested arbitrarily deep. Their URLs will be the path to the file relative to the `pages` directory.
@@ -51,6 +52,7 @@ The resulting directory now looks like the following:
 
 ```
 mysite
+├── assets
 ├── layouts
 │   └── app.ejs
 ├── pages
@@ -87,7 +89,19 @@ title: My post
 This is my post.
 ```
 
-And, finally, we want to compile the source into static files:
+To view our pages while we develop them, we'll start the development server:
+
+```
+$ syte serve
+```
+
+This will spin up your syte project by default on http://localhost:3500. In this case, the three pages available to us are:
+
+* http://localhost:3500
+* http://localhost:3500/blog
+* http://localhost:3500/blog/my-post
+
+Finally, when we're ready to deploy, we can compile the source into static files with the following command.
 
 ```
 $ syte build
@@ -97,6 +111,7 @@ This will output a directory called `build` (the default, but can be changed wit
 
 ```
 build
+├── assets
 ├── blog
 │   ├── my-post
 │   │   └── index.html
