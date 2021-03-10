@@ -30,8 +30,8 @@ function hasExtension(filePath: string, ext: string) {
 
 export default {
   create(projectPagesPath: string, file: FileType): PageType {
-    const filePath = file.path;
-    const urlPath = constructUrlPath(projectPagesPath, file.path);
+    const filePath = file.filePath;
+    const urlPath = constructUrlPath(projectPagesPath, file.filePath);
     const [context, contents] = fm.parse(file.contents);
     return Object.freeze({ filePath, urlPath, contents, context });
   },

@@ -3,7 +3,7 @@ export type ObjectType = {
 };
 
 export interface FileType {
-  path: string;
+  filePath: string;
   contents: string;
 }
 

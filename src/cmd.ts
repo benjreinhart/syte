@@ -102,7 +102,7 @@ async function cmdBuild(argv: BuildCmdArgvType) {
 
       const layoutName = pageData.context.layout || appContext.layout;
       const layoutFile = layoutFiles.find((f) => {
-        const relativePath = path.relative(layoutsPath, f.path).replace(/\.ejs$/, "");
+        const relativePath = path.relative(layoutsPath, f.filePath).replace(/\.ejs$/, "");
         return relativePath === layoutName;
       });
       if (!layoutFile) {

@@ -19,10 +19,10 @@ export default {
   },
 
   readAll(paths: string[]) {
-    const read = (path: string) => {
+    const read = (filePath: string) => {
       return new Promise<FileType>((resolve) => {
-        this.read(path).then((contents) => {
-          const file = Object.freeze({ path, contents });
+        this.read(filePath).then((contents) => {
+          const file = Object.freeze({ filePath, contents });
           return resolve(file);
         });
       });
