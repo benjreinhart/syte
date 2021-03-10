@@ -3,9 +3,7 @@ import fs from "../../fs";
 
 function appData(projectName: string, layoutName: string) {
   const data = {
-    $: {
-      layout: layoutName,
-    },
+    layout: layoutName,
     title: projectName,
   };
 
@@ -19,7 +17,7 @@ function appLayout() {
     <title><%= title %></title>
   </head>
   <body>
-    <%- $.body %>
+    <%- body %>
   </body>
 </html>
 `;

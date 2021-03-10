@@ -11,15 +11,11 @@ export interface ConfigType {
   layout: string | void;
 }
 
-export type UserData = {
-  config: ConfigType;
-  context: ObjectType;
-};
-
-export interface PageType extends UserData {
+export interface PageType {
   filePath: string;
   urlPath: string;
   contents: string;
+  context: ObjectType;
 }
 
 export interface SyteType {

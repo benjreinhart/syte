@@ -6,8 +6,16 @@ import { shallowMerge } from "./utils";
 import fs from "./fs";
 import { ContextType } from "./types";
 import page from "./page";
-import userData from "./user_data";
-import syte from "./syte";
+
+const URI_RE = new RegExp("^[-a-z]+://|^(?:cid|data):|^//");
+
+export function assetPath(root: string, source: string) {
+  if (URI_RE.test(source)) {
+    return source;
+  } else {
+    return path.join(root, source);
+  }
+}
 
 interface NewCmdArgvType {
   path: string;
@@ -42,7 +50,6 @@ async function cmdBuild(argv: BuildCmdArgvType) {
   }
   const appContextStr = await fs.read(appContextPath);
   const appContext = JSON.parse(appContextStr);
-  const appData = userData.create(appContext);
 
   const layoutsPath = path.join(projectPath, "layouts");
   const layoutPaths = await fs.glob(`${layoutsPath}/**/*.ejs`);
@@ -68,25 +75,27 @@ async function cmdBuild(argv: BuildCmdArgvType) {
 
   const buildPages = () => {
     return pages.map(async (pageData) => {
-      const context: ContextType = shallowMerge(appData.context, pageData.context, {
-        $: syte(
-          pages,
-          argv.environment,
-          argv.environment === "development" ? path.join(projectPath, "assets") : "/assets"
-        ),
+      const context: ContextType = shallowMerge(appContext, pageData.context, {
+        pages,
+        environment: argv.environment,
+        assetPath: (source: string) => {
+          const root =
+            argv.environment === "development" ? path.join(projectPath, "assets") : "/assets";
+          return assetPath(root, source);
+        },
       });
 
       if (page.isMarkdown(pageData)) {
         const compiledPageContents = marked(pageData.contents);
-        context.$.body = compiledPageContents;
+        context.body = compiledPageContents;
       } else if (page.isEjs(pageData)) {
         const compiledPageContents = ejs.render(pageData.contents, context, {
           rmWhitespace: true,
         });
-        context.$.body = compiledPageContents;
+        context.body = compiledPageContents;
       }
 
-      const layoutName = pageData.config.layout || appData.config.layout;
+      const layoutName = pageData.context.layout || appContext.layout;
       const layoutFile = layoutFiles.find((f) => {
         const relativePath = path.relative(layoutsPath, f.path).replace(/\.ejs$/, "");
         return relativePath === layoutName;
