@@ -14,21 +14,13 @@ export default {
     }
   },
 
-  read(path: string) {
-    return fs.readFile(path, { encoding: "utf8" });
+  async read(filePath: string): Promise<FileType> {
+    const contents = await fs.readFile(filePath, { encoding: "utf8" });
+    return Object.freeze({ filePath, contents });
   },
 
   readAll(paths: string[]) {
-    const read = (filePath: string) => {
-      return new Promise<FileType>((resolve) => {
-        this.read(filePath).then((contents) => {
-          const file = Object.freeze({ filePath, contents });
-          return resolve(file);
-        });
-      });
-    };
-
-    return Promise.all(paths.map(read));
+    return Promise.all(paths.map(this.read));
   },
 
   glob(pattern: string) {

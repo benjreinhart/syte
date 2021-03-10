@@ -49,8 +49,10 @@ async function cmdBuild(argv: BuildCmdArgvType) {
     console.error(`Cannot find app context at ${appContextPath}`);
     process.exit(1);
   }
-  const appContextStr = await fs.read(appContextPath);
-  const appContextValue = isBlank(appContextStr) ? {} : yaml.load(appContextStr);
+  const appContextFile = await fs.read(appContextPath);
+  const appContextValue = isBlank(appContextFile.contents)
+    ? {}
+    : yaml.load(appContextFile.contents);
   if (!isObject(appContextValue)) {
     throw new Error("app.yaml must define an object");
   }
