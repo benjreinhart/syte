@@ -5,17 +5,41 @@ import templates from "./templates";
 import fm from "./fm";
 import fs from "./fs";
 import { ContextType, FileType, LayoutType, PageType, ObjectType, SyteType } from "./types";
-import { loadYamlObject, shallowMerge } from "./utils";
+import { isObject, isString, loadYamlObject, shallowMerge } from "./utils";
 import server from "./server";
+
+function urlPathJoin(...paths: string[]) {
+  return ["/"].concat(paths).join("/").replace(/\/+/g, "/").replace(/\/$/, "");
+}
 
 const URI_RE = new RegExp("^[-a-z]+://|^(?:cid|data):|^//");
 
-function assetPath(source: string) {
-  if (URI_RE.test(source)) {
-    return source;
-  } else {
-    return path.join("/assets", source);
-  }
+function buildAssetPath(pathRoot: string) {
+  return (source: string) => {
+    if (URI_RE.test(source)) {
+      return source;
+    } else {
+      return urlPathJoin(pathRoot, "/assets", source);
+    }
+  };
+}
+
+function buildPathTo(pathRoot: string) {
+  return (source: string | PageType) => {
+    if (isString(source)) {
+      const strSource = source as string;
+      if (URI_RE.test(strSource)) {
+        return strSource;
+      } else {
+        return urlPathJoin(pathRoot, strSource);
+      }
+    } else if (isObject(source)) {
+      const pageSource = source as PageType;
+      return urlPathJoin(pathRoot, pageSource.urlPath);
+    } else {
+      throw new TypeError(`Expected string or page object, received '${source}'`);
+    }
+  };
 }
 
 function constructUrlPath(projectPagesPath: string, filePath: string) {
@@ -102,14 +126,20 @@ async function readAllPages(projectPagesPath: string, pagesPath: string[]) {
   return Promise.all(promises);
 }
 
+interface PageRenderOptions {
+  urlPathPrefix: string;
+}
+
 function renderPage(
   page: PageType,
   appContext: ObjectType,
   layouts: LayoutType[],
-  pages: PageType[]
+  pages: PageType[],
+  options: PageRenderOptions
 ) {
   const context: ContextType = shallowMerge(appContext, page.context, {
-    assetPath,
+    assetPath: buildAssetPath(options.urlPathPrefix),
+    pathTo: buildPathTo(options.urlPathPrefix),
     pages: pages.map((page) => page.context),
   });
 
@@ -239,13 +269,14 @@ async function cmdServe(argv: ServeCmdArgvType) {
       return null;
     }
 
-    return renderPage(page, syte.app, syte.layouts, syte.pages);
+    return renderPage(page, syte.app, syte.layouts, syte.pages, { urlPathPrefix: "/" });
   });
 }
 
 interface BuildCmdArgvType {
   path: string;
   outputPath: string;
+  urlPathPrefix: string;
 }
 
 async function cmdBuild(argv: BuildCmdArgvType) {
@@ -279,7 +310,7 @@ async function cmdBuild(argv: BuildCmdArgvType) {
 
   const buildPages = () => {
     return pages.map(async (page) => {
-      const pageContents = renderPage(page, appContext, layouts, pages);
+      const pageContents = renderPage(page, appContext, layouts, pages, argv);
       const pageOutputDirPath = path.join(outputPath, page.urlPath);
       await fs.mkdirp(pageOutputDirPath);
       const filePath = path.join(pageOutputDirPath, "index.html");

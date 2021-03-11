@@ -11,6 +11,10 @@ export function shallowMerge(...o: ObjectType[]) {
   return Object.assign({}, ...o);
 }
 
+export function isString(o: any) {
+  return Object.prototype.toString.call(o) === "[object String]";
+}
+
 export function isObject(o: any) {
   if (o === undefined || o === null) {
     return false;

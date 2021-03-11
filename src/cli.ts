@@ -49,6 +49,10 @@ yargs(process.argv.slice(2))
             describe: "Path where syte site will be written",
             default: "build",
           },
+          urlPathPrefix: {
+            describe: "Specify a path to prefix the url path",
+            default: "/",
+          },
         });
     },
     handler: cmd.build,
