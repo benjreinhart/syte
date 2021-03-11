@@ -123,8 +123,12 @@ main {
   margin: 26px 0;
 }
 
-.hero-content .button {
-  margin-right: 8px;
+.hero-buttons {
+  display: flex;
+}
+
+.hero-buttons div:last-child {
+  margin: 0 0 0 8px;
 }
 
 .hero-preview {
@@ -134,6 +138,14 @@ main {
 @media (max-width: 800px) { 
   .hero-preview {
     display: none;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+  }
+
+  .hero-buttons div:last-child {
+    margin: 8px 0 0 0;
   }
 }
 
