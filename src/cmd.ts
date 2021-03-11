@@ -80,6 +80,7 @@ function constructPage(projectPagesPath: string, file: FileType): PageType {
   const filePath = file.filePath;
   const urlPath = constructUrlPath(projectPagesPath, file.filePath);
   const [context, contents] = fm.parse(file.contents);
+  context.urlPath = urlPath;
   return Object.freeze({ filePath, urlPath, contents, context });
 }
 
@@ -114,7 +115,10 @@ function renderPage(
   layouts: LayoutType[],
   pages: PageType[]
 ) {
-  const context: ContextType = shallowMerge(appContext, page.context, { pages, assetPath });
+  const context: ContextType = shallowMerge(appContext, page.context, {
+    assetPath,
+    pages: pages.map((page) => page.context),
+  });
 
   if (isMarkdown(page)) {
     const compiledPageContents = marked(page.contents);
