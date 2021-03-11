@@ -43,6 +43,9 @@ function serve(port: number, render: (url: URL) => Promise<string | null>) {
         res.writeHead(404);
         return res.end("Not Found");
       }
+      if (!url.pathname.startsWith("/assets/")) {
+        res.setHeader("Content-Type", "text/html; charset=utf-8");
+      }
       res.writeHead(200);
       res.end(content);
     } catch (e) {
