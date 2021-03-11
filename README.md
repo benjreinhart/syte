@@ -2,7 +2,9 @@
 
 Syte is a minimalist static site generator.
 
-Syte takes static assets, a configuration file, and your [ejs](https://ejs.co) files and compiles them into static HTML files. [Markdown](https://www.markdownguide.org) is supported using the `.md.ejs` extension, enabling a more powerful developer experience by allowing programmatic access to the application environment within your markdown content.
+Syte takes static assets, a configuration file, and your [ejs](https://ejs.co) files and compiles them into static HTML files.
+
+[Markdown](https://www.markdownguide.org) is supported using the `.md.ejs` extension, which means it is first preprocessed using ejs. This enables a more powerful developer experience by allowing programmatic control as well as access to the dynamic application environment from within your markdown content.
 
 ## Install
 
@@ -63,21 +65,7 @@ mysite
 └── app.json
 ```
 
-In our `pages/blog/index.ejs` page, we want to render a list of links to all blog posts:
-
-```ejs
-<ul>
-<% for (const page of pages) { %>
-<% if (/\/blog\/.+/.test(page.urlPath)) { %>
-  <li>
-    <a href="<%= page.urlPath %>"><%= page.urlPath %></a>
-  </li>
-<% } %>
-<% } %>
-</ul>
-```
-
-And in our `pages/blog/my-post.md.ejs` we want to write a blog post:
+In the `pages/blog/my-post.md.ejs` file we want to write a blog post:
 
 ```md
 ---
@@ -87,6 +75,22 @@ title: My post
 # My Post
 
 This is my post.
+```
+
+Notice that the file uses front matter to define a `title` property for the page. Properties defined in the front matter will be available to the templates during compilation.
+
+In our `pages/blog/index.ejs` page, we want to render a list of links to all blog posts:
+
+```ejs
+<ul>
+<% for (const page of pages) { %>
+<% if (/\/blog\/.+/.test(page.urlPath)) { %>
+  <li>
+    <a href="<%= page.urlPath %>"><%= page.title %></a>
+  </li>
+<% } %>
+<% } %>
+</ul>
 ```
 
 To view our pages while we develop them, we'll start the development server:
