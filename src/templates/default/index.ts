@@ -73,7 +73,7 @@ async function create(projectPath: string, projectName: string) {
         }
       },
       async () => {
-        const indexPagePath = path.join(projectPath, "pages", "index.md.ejs");
+        const indexPagePath = path.join(projectPath, "pages", "index.md");
         if (!(await fs.exists(indexPagePath))) {
           await fs.write(indexPagePath, indexPage());
         }
