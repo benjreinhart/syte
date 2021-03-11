@@ -30,7 +30,7 @@ title: Index Page
 ---
 # Index page
 
-This is the index page.
+This is your syte. It has <%= pages.length %> pages.
 
 ## TODO
 
@@ -56,7 +56,7 @@ async function create(projectPath: string, projectName: string) {
         }
       },
       async () => {
-        const indexPagePath = path.join(projectPath, "pages", "index.md");
+        const indexPagePath = path.join(projectPath, "pages", "index.md.ejs");
         if (!(await fs.exists(indexPagePath))) {
           await fs.write(indexPagePath, indexPage());
         }

@@ -2,7 +2,7 @@
 
 Syte is a minimalist static site generator.
 
-Syte compiles [ejs](https://ejs.co) and [markdown](https://www.markdownguide.org) files into static HTML files.
+Syte takes static assets, a configuration file, and your [ejs](https://ejs.co) files and compiles them into static HTML files. [Markdown](https://www.markdownguide.org) is supported using the `.md.ejs` extension, enabling a more powerful developer experience by allowing programmatic access to the application environment within your markdown content.
 
 ## Install
 
@@ -25,7 +25,7 @@ mysite
 ├── layouts
 │   └── app.ejs
 ├── pages
-│   └── index.md
+│   └── index.md.ejs
 └── app.yaml
 ```
 
@@ -33,7 +33,7 @@ Note:
 
 * The `layouts` directory, `pages` directory, and `app.yaml` file are mandatory. The `assets` is where you can put any static assets. This entire folder will be copied as is for the production build.
 * `app.yaml` can contain any arbitrary context you want and will be available in the ejs files.
-* The `pages` directory can contain any number markdown (`.md`) or ejs (`.ejs`) files.
+* The `pages` directory can contain any number of ejs (`.ejs`) or markdown ejs (`.md.ejs`) files.
 * Pages can be nested arbitrarily deep. Their URLs will be the path to the file relative to the `pages` directory.
 * Pages are able to supply context and configuration via front matter (yaml with leading and trailing `---`). This context will be merged against the global context defined in `app.yaml`.
 
@@ -45,7 +45,7 @@ Let's say we want to add some blog pages to our site with the following urls:
 ```
 $ mkdir pages/blog
 $ touch pages/blog/index.ejs
-$ touch pages/blog/my-post.md
+$ touch pages/blog/my-post.ejs
 ```
 
 The resulting directory now looks like the following:
@@ -58,8 +58,8 @@ mysite
 ├── pages
 │   ├── blog
 │   │   ├── index.ejs
-│   │   └── my-post.md
-│   └── index.md
+│   │   └── my-post.md.ejs
+│   └── index.md.ejs
 └── app.json
 ```
 
@@ -77,7 +77,7 @@ In our `pages/blog/index.ejs` page, we want to render a list of links to all blo
 </ul>
 ```
 
-And in our `pages/blog/my-post.md` we want to write a blog post:
+And in our `pages/blog/my-post.md.ejs` we want to write a blog post:
 
 ```md
 ---

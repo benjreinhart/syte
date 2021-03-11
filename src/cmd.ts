@@ -23,13 +23,14 @@ function constructUrlPath(projectPagesPath: string, filePath: string) {
 
   let urlPath = relativeFilePath;
 
-  // Remove supported extensions, e.g.:
+  // Remove supported extensions (.ejs and .md.ejs), e.g.:
   //
-  //     foo/bar.ejs => foo/bar
-  //     foo/bar.md => foo/bar
-  //     foo/bar.baz.md => foo/bar.baz
+  //     foo/bar.js      => foo/bar.js
+  //     foo/bar.ejs     => foo/bar
+  //     foo/bar.md.ejs  => foo/bar
+  //     foo/bar.baz.ejs => foo/bar.baz
   //
-  urlPath = urlPath.replace(/(\.ejs|\.md)$/g, "");
+  urlPath = urlPath.replace(/(\.md)?\.ejs$/, "");
 
   // urlPath should be the full path of the url, so ensure a '/' prefix
   urlPath = urlPath.startsWith("/") ? urlPath : `/${urlPath}`;
@@ -40,16 +41,8 @@ function constructUrlPath(projectPagesPath: string, filePath: string) {
   return urlPath;
 }
 
-function hasExtension(filePath: string, ext: string) {
-  return path.extname(filePath) === ext;
-}
-
-function isMarkdown(page: PageType) {
-  return hasExtension(page.filePath, ".md");
-}
-
-function isEjs(page: PageType) {
-  return hasExtension(page.filePath, ".ejs");
+function isMarkdownEjs(page: PageType) {
+  return /\.md\.ejs$/.test(page.filePath);
 }
 
 function isRequestingAsset(urlPath: string) {
@@ -120,12 +113,10 @@ function renderPage(
     pages: pages.map((page) => page.context),
   });
 
-  if (isMarkdown(page)) {
-    const compiledPageContents = marked(page.contents);
-    context.body = compiledPageContents;
-  } else if (isEjs(page)) {
-    const compiledPageContents = ejs.render(page.contents, context);
-    context.body = compiledPageContents;
+  context.body = ejs.render(page.contents, context);
+
+  if (isMarkdownEjs(page)) {
+    context.body = marked(context.body);
   }
 
   const layoutName = page.context.layout || appContext.layout;
@@ -190,8 +181,8 @@ async function cmdServe(argv: ServeCmdArgvType) {
 
   const watcher = chokidar.watch([
     `${projectPath}/app.yaml`,
-    `${projectPath}/layouts/**/*.(ejs)`,
-    `${projectPath}/pages/**/*.(ejs|md)`,
+    `${projectPath}/layouts/**/*.ejs`,
+    `${projectPath}/pages/**/*.ejs`,
   ]);
 
   watcher.on("add", async (filePath: string) => {
@@ -276,7 +267,7 @@ async function cmdBuild(argv: BuildCmdArgvType) {
   const layouts = await readAllLayouts(projectLayoutsPath, layoutPaths);
 
   const projectPagesPath = path.join(projectPath, "pages");
-  const pagePaths = await fs.glob(`${projectPagesPath}/**/*.(ejs|md)`);
+  const pagePaths = await fs.glob(`${projectPagesPath}/**/*.ejs`);
   if (pagePaths.length === 0) {
     console.error(`Cannot find pages at ${projectPagesPath}`);
     process.exit(1);
