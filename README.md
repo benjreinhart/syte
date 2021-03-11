@@ -85,13 +85,13 @@ In our `pages/blog/index.ejs` page, we want to render a list of links to all blo
 
 ```ejs
 <ul>
-<% for (const page of pages) { %>
-<% if (/\/blog\/.+/.test(page.urlPath)) { %>
+<% for (const page of pages) { _%>
+<% if (page.urlPath.startsWith("/blog/")) { _%>
   <li>
-    <a href="<%= page.urlPath %>"><%= page.title %></a>
+    <a href="<%= pathTo(page.urlPath) %>"><%= page.title %></a>
   </li>
-<% } %>
-<% } %>
+<% } _%>
+<% } _%>
 </ul>
 ```
 
@@ -124,4 +124,10 @@ build
 │   │   └── index.html
 │   └── index.html
 └── index.html
+```
+
+When deploying to some environments, you may need to prefix the urls with a root path (this is the case with some github pages sites). If you used the `pathTo` helper for all your relative url references, then you can build the site with a specified url path prefix. For example, if you are deploying to github pages for a repo named `your-gh-repo`, you would build your syte project with the following command:
+
+```
+$ syte build --urlPathPrefix your-gh-repo
 ```
