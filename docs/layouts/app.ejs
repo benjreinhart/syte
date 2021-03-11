@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charSet="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title><%= title %></title>
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content="Minimalist static site generator" />
+    <meta property="og:title" content="Syte · Minimalist static site generator" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://benreinhart.com/syte" />
+    <meta property="og:description" content="Minimalist static site generator" />
+    <meta name="twitter:card" content="summary" />
+    <link href="<%= pathTo("modern-normalize.css") %>" rel="stylesheet">
+    <link href="<%= pathTo("app.css") %>" rel="stylesheet">
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <h2 class="site-header-heading"><a href="<%= pathTo("/") %>">Syte</a></h2>
+        <nav>
+          <a href="<%= pathTo("/docs/getting-started") %>">Get started</a>
+          <a href="<%= pathTo("/docs/reference") %>">Docs</a>
+          <a href="<%= syte.githubUrl %>">Github</a>
+        </nav>
+      </div>
+    </header>
+    <main role="main">
+      <%- body %>
+    </main>
+  </body>
+</html>
