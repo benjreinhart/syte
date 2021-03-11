@@ -24,6 +24,7 @@ This will create a new project called `mysite` with the following directory stru
 ```
 mysite
 ├── assets
+│   └── app.css
 ├── layouts
 │   └── app.ejs
 ├── pages
@@ -33,7 +34,7 @@ mysite
 
 Note:
 
-* The `layouts` directory, `pages` directory, and `app.yaml` file are mandatory. The `assets` is where you can put any static assets. This entire folder will be copied as is for the production build.
+* The `layouts` directory, `pages` directory, and `app.yaml` file are mandatory. The `assets` is where you can put any static assets. The entire `assets` folder will be copied as is for the production build.
 * `app.yaml` can contain any arbitrary context you want and will be available in the ejs files.
 * The `pages` directory can contain any number of ejs (`.ejs`) or markdown ejs (`.md.ejs`) files.
 * Pages can be nested arbitrarily deep. Their URLs will be the path to the file relative to the `pages` directory.
@@ -55,6 +56,7 @@ The resulting directory now looks like the following:
 ```
 mysite
 ├── assets
+│   └── app.css
 ├── layouts
 │   └── app.ejs
 ├── pages
@@ -62,7 +64,7 @@ mysite
 │   │   ├── index.ejs
 │   │   └── my-post.md.ejs
 │   └── index.md.ejs
-└── app.json
+└── app.yaml
 ```
 
 In the `pages/blog/my-post.md.ejs` file we want to write a blog post:
@@ -116,6 +118,7 @@ This will output a directory called `build` (the default, but can be changed wit
 ```
 build
 ├── assets
+│   └── app.css
 ├── blog
 │   ├── my-post
 │   │   └── index.html
