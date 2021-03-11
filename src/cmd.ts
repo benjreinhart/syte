@@ -9,7 +9,15 @@ import { isObject, isString, loadYamlObject, shallowMerge } from "./utils";
 import server from "./server";
 
 function urlPathJoin(...paths: string[]) {
-  return ["/"].concat(paths).join("/").replace(/\/+/g, "/").replace(/\/$/, "");
+  let path = paths.join("/");
+
+  // Replace duplicate slashes with one slash
+  path = path.replace(/\/+/g, "/");
+
+  // Remove leading and trailing slashes
+  path = path.replace(/^\/|\/$/g, "");
+
+  return `/${path}`;
 }
 
 const URI_RE = new RegExp("^[-a-z]+://|^(?:cid|data):|^//");
