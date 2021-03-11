@@ -1,0 +1,87 @@
+/* https://colorhunt.co/palette/264984 */
+/* https://colorhunt.co/palette/257756 */
+
+body {
+  background-color: #f9f3f3;
+  line-height: 1.5em;
+  color: rgb(36, 41, 46);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+p {
+  font-size: 16px;
+}
+
+a, a:active, a:visited, a:focus, a:hover {
+  color: #383e56;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.site-header {
+  padding: 12px;
+  min-height: 50px;
+  max-height: 50px;
+  background-color: #ff7171;
+}
+
+.site-header a {
+  color: #f4f9f9;
+}
+
+.site-header-inner {
+  max-width: 1080px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #f4f9f9;
+  margin: 0px auto;
+}
+
+.site-header-inner h2 {
+  margin: 0;
+  padding: 0;
+  line-height: 1em;
+  font-size: 24px;
+}
+
+.site-header-inner nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.site-header-inner nav a {
+  padding: 0 10px;
+}
+
+.hero {
+  /* max-width: 1080px; */
+  /* margin: 80px auto 0 auto; */
+  padding: 80px 0;
+}
+
+.hero-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  display: flex;
+}
+
+.hero-inner h1 {
+  font-size: 48px;
+  line-height: 1em;
+}
+
+.hero-preview {
+  padding: 16px 48px;
+}
+
+.features {
+  height: 600px;
+  /* background-color: #f0e4d7; */
+  /* background-color: #f4f9f9; */
+  background-color: #f9f3f3;
+}
