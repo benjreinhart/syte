@@ -1,10 +1,10 @@
 # syte
 
-Syte is a minimalist static site generator.
+Syte is an opinionated static site generator. It's intended for simple use cases, e.g., personal sites and blogs.
 
-Syte takes static assets, a configuration file, and your [ejs](https://ejs.co) or [Markdown](https://www.markdownguide.org) files and compiles them into static HTML files.
+Syte takes static assets, a config file, and your [ejs](https://ejs.co) and [markdown](https://www.markdownguide.org) files and compiles them into static HTML files.
 
-[Markdown](https://www.markdownguide.org) files are first preprocessed using ejs. This enables a more powerful developer experience by allowing programmatic control as well as access to the dynamic application environment from within your markdown content.
+[Markdown](https://www.markdownguide.org) files are first preprocessed using ejs. This enables a more powerful developer experience by allowing programmatic access to the dynamic application environment from within your markdown content.
 
 ## Install
 
