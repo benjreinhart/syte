@@ -133,6 +133,10 @@ main {
   padding: 0 48px;
 }
 
+.hero-preview pre {
+  margin: 0;
+}
+
 @media (max-width: 800px) { 
   .hero-preview {
     display: none;
