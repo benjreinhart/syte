@@ -3,7 +3,7 @@
 
 :root {
   --white: #fff;
-  --light: #f4f9f9;
+  --light: rgba(255, 255, 255, 0.95);
   --dark: rgba(36, 41, 46, 0.9);
   --light-pink: #f9f3f3;
   --pastel: #ff7171;
@@ -61,7 +61,6 @@ main {
   z-index: 9999;
   transform: translateZ(0);
   background: var(--pastel);
-  color: var(--light);
 }
 
 .site-header nav a {
@@ -73,7 +72,6 @@ main {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: var(--light);
   margin: 0px auto;
 }
 
@@ -127,8 +125,8 @@ main {
   display: flex;
 }
 
-.hero-buttons div:last-child {
-  margin: 0 0 0 8px;
+.hero-buttons div {
+  margin: 0 8px 0 0;
 }
 
 .hero-preview {
@@ -144,8 +142,8 @@ main {
     flex-direction: column;
   }
 
-  .hero-buttons div:last-child {
-    margin: 8px 0 0 0;
+  .hero-buttons div {
+    margin: 4px 0 4px 0;
   }
 }
 
