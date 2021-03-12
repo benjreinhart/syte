@@ -121,12 +121,9 @@ main {
   margin: 26px 0;
 }
 
-.hero-buttons {
-  display: flex;
-}
-
-.hero-buttons div {
-  padding: 0 8px 0 0;
+.hero-buttons a {
+  margin-right: 10px;
+  margin-bottom: 10px;
 }
 
 .hero-preview {
@@ -136,14 +133,6 @@ main {
 @media (max-width: 800px) { 
   .hero-preview {
     display: none;
-  }
-
-  .hero-buttons {
-    flex-direction: column;
-  }
-
-  .hero-buttons div {
-    padding: 4px 0 4px 0;
   }
 }
 
