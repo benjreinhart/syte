@@ -2,7 +2,7 @@
 
 Syte is an opinionated static site generator. It's intended for simple use cases, e.g., personal sites and blogs.
 
-Syte takes static assets, a config file, and your [ejs](https://ejs.co) and [markdown](https://www.markdownguide.org) files and compiles them into static HTML files.
+Syte takes static files of any kind, a config file, and your [ejs](https://ejs.co) and [markdown](https://www.markdownguide.org) files and compiles them into static HTML files.
 
 [Markdown](https://www.markdownguide.org) files are first preprocessed using ejs. This enables a more powerful developer experience by allowing programmatic access to the dynamic application environment from within your markdown content.
 
@@ -23,18 +23,18 @@ This will create a new project called `mysite` with the following directory stru
 
 ```
 mysite
-├── assets
-│   └── app.css
 ├── layouts
 │   └── app.ejs
 ├── pages
 │   └── index.md
+├── static
+│   └── app.css
 └── app.yaml
 ```
 
 Note:
 
-* The `layouts` directory, `pages` directory, and `app.yaml` file are mandatory. The `assets` is where you can put any static assets. The entire `assets` folder will be copied as is for the production build.
+* The `layouts` directory, `pages` directory, and `app.yaml` file are mandatory. The `static` directory is where you can put any static files, like JavaScript, CSS, favicon.ico, CNAME, etc. The entire `static` folder will be copied as is into the root directory for the production build.
 * `app.yaml` can contain any arbitrary context you want and will be available in the ejs files.
 * The `pages` directory can contain any number of ejs (`.ejs`) or markdown (`.md`) files.
 * Pages can be nested arbitrarily deep. Their URLs will be the path to the file relative to the `pages` directory.
@@ -55,8 +55,6 @@ The resulting directory now looks like the following:
 
 ```
 mysite
-├── assets
-│   └── app.css
 ├── layouts
 │   └── app.ejs
 ├── pages
@@ -64,6 +62,8 @@ mysite
 │   │   ├── index.ejs
 │   │   └── my-post.md
 │   └── index.md
+├── static
+│   └── app.css
 └── app.yaml
 ```
 
@@ -117,8 +117,7 @@ This will output a directory called `build` (the default, but can be changed wit
 
 ```
 build
-├── assets
-│   └── app.css
+├── app.css
 ├── blog
 │   ├── my-post
 │   │   └── index.html
@@ -126,7 +125,7 @@ build
 └── index.html
 ```
 
-When deploying to some environments, you may need to prefix the urls with a root path (this is the case with some github pages sites). If you used the `assetPath` and `pathTo` helpers for all your relative url references, then you can build the site with a specified url path prefix. For example, if you are deploying to github pages for a repo named `your-gh-repo`, you would build your syte project with the following command:
+When deploying to some environments, you may need to prefix the urls with a root path (this is the case with some github pages sites). If you used the `staticPath` and `pathTo` helpers for all your relative url references, then you can build the site with a specified url path prefix. For example, if you are deploying to github pages for a repo named `your-gh-repo`, you would build your syte project with the following command:
 
 ```
 $ syte build --urlPathPrefix your-gh-repo

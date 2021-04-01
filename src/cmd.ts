@@ -22,12 +22,12 @@ function urlPathJoin(...paths: string[]) {
 
 const URI_RE = new RegExp("^[-a-z]+://|^(?:cid|data):|^//");
 
-function buildAssetPath(pathRoot: string) {
+function buildStaticPath(pathRoot: string) {
   return (source: string) => {
     if (URI_RE.test(source)) {
       return source;
     } else {
-      return urlPathJoin(pathRoot, "/assets", source);
+      return urlPathJoin(pathRoot, source);
     }
   };
 }
@@ -75,10 +75,6 @@ function constructUrlPath(projectPagesPath: string, filePath: string) {
 
 function isMarkdown(page: PageType) {
   return path.extname(page.filePath) === ".md";
-}
-
-function isRequestingAsset(urlPath: string) {
-  return /^\/assets\//.test(urlPath);
 }
 
 function isAppYaml(projectPath: string, filePath: string) {
@@ -146,7 +142,7 @@ function renderPage(
   options: PageRenderOptions
 ) {
   const context: ContextType = shallowMerge(appContext, page.context, {
-    assetPath: buildAssetPath(options.urlPathPrefix),
+    staticPath: buildStaticPath(options.urlPathPrefix),
     pathTo: buildPathTo(options.urlPathPrefix),
     pages: pages.map((page) => page.context),
   });
@@ -175,7 +171,7 @@ async function cmdNew(argv: NewCmdArgvType) {
   const projectName = path.basename(projectPath);
 
   await Promise.all([
-    fs.mkdirp(path.join(projectPath, "assets")),
+    fs.mkdirp(path.join(projectPath, "static")),
     fs.mkdirp(path.join(projectPath, "layouts")),
     fs.mkdirp(path.join(projectPath, "pages")),
   ]);
@@ -266,18 +262,20 @@ async function cmdServe(argv: ServeCmdArgvType) {
   });
 
   server.serve(argv.port, async (url) => {
-    if (isRequestingAsset(url.pathname)) {
-      const file = await fs.read(path.join(projectPath, url.pathname));
-      return file.contents;
-    }
-
     const urlPath = url.pathname === "/" ? url.pathname : url.pathname.replace(/\/+$/, "");
     const page = syte.pages.find((page) => page.urlPath === urlPath);
-    if (page === undefined) {
-      return null;
+    if (page !== undefined) {
+      const body = renderPage(page, syte.app, syte.layouts, syte.pages, { urlPathPrefix: "/" });
+      return [200, { "Content-Type": "text/html" }, body];
     }
 
-    return renderPage(page, syte.app, syte.layouts, syte.pages, { urlPathPrefix: "/" });
+    const staticFilePath = path.join(projectPath, "static", url.pathname);
+    if (await fs.exists(staticFilePath)) {
+      const file = await fs.read(path.join(projectPath, "static", url.pathname));
+      return [200, {}, file.contents];
+    }
+
+    return [404, {}, "Not Found"];
   });
 }
 
@@ -326,13 +324,13 @@ async function cmdBuild(argv: BuildCmdArgvType) {
     });
   };
 
-  const copyStaticAssets = () => {
-    const source = path.join(projectPath, "assets");
-    const destination = path.join(outputPath, "assets");
+  const copyStatic = () => {
+    const source = path.join(projectPath, "static");
+    const destination = path.join(outputPath);
     return fs.copy(source, destination);
   };
 
-  await Promise.all([copyStaticAssets(), ...buildPages()]);
+  await Promise.all([copyStatic(), ...buildPages()]);
 }
 
 export default {

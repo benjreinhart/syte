@@ -21,7 +21,7 @@ function appLayout() {
 <html lang="en-us">
   <head>
     <title><%= title %></title>
-    <link href="<%= assetPath("app.css") %>" rel="stylesheet">
+    <link href="<%= staticPath("app.css") %>" rel="stylesheet">
   </head>
   <body>
     <%- body %>
@@ -61,7 +61,7 @@ async function create(projectPath: string, projectName: string) {
         }
       },
       async () => {
-        const appCssPath = path.join(projectPath, "assets", "app.css");
+        const appCssPath = path.join(projectPath, "static", "app.css");
         if (!(await fs.exists(appCssPath))) {
           await fs.write(appCssPath, appCss());
         }
