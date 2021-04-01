@@ -125,7 +125,7 @@ build
 └── index.html
 ```
 
-When deploying to some environments, you may need to prefix the urls with a root path (this is the case with some github pages sites). If you used the `staticPath` and `pathTo` helpers for all your relative url references, then you can build the site with a specified url path prefix. For example, if you are deploying to github pages for a repo named `your-gh-repo`, you would build your syte project with the following command:
+When deploying to some environments, you may need to prefix the urls with a root path (this is the case with some github pages sites). If you used the `pathTo` helper for all your relative url references, then you can build the site with a specified url path prefix. For example, if you are deploying to github pages for a repo named `your-gh-repo`, you would build your syte project with the following command:
 
 ```
 $ syte build --urlPathPrefix your-gh-repo

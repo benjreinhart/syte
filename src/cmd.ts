@@ -22,16 +22,6 @@ function urlPathJoin(...paths: string[]) {
 
 const URI_RE = new RegExp("^[-a-z]+://|^(?:cid|data):|^//");
 
-function buildStaticPath(pathRoot: string) {
-  return (source: string) => {
-    if (URI_RE.test(source)) {
-      return source;
-    } else {
-      return urlPathJoin(pathRoot, source);
-    }
-  };
-}
-
 function buildPathTo(pathRoot: string) {
   return (source: string | PageType) => {
     if (isString(source)) {
@@ -142,7 +132,6 @@ function renderPage(
   options: PageRenderOptions
 ) {
   const context: ContextType = shallowMerge(appContext, page.context, {
-    staticPath: buildStaticPath(options.urlPathPrefix),
     pathTo: buildPathTo(options.urlPathPrefix),
     pages: pages.map((page) => page.context),
   });

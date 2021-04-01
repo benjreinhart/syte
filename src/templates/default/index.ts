@@ -21,7 +21,7 @@ function appLayout() {
 <html lang="en-us">
   <head>
     <title><%= title %></title>
-    <link href="<%= staticPath("app.css") %>" rel="stylesheet">
+    <link href="<%= pathTo("app.css") %>" rel="stylesheet">
   </head>
   <body>
     <%- body %>
