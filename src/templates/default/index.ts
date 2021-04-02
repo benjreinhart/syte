@@ -20,6 +20,7 @@ function appLayout() {
   return `<!DOCTYPE html>
 <html lang="en-us">
   <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><%= title %></title>
     <link href="<%= pathTo("app.css") %>" rel="stylesheet">
   </head>
