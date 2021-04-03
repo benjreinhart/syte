@@ -1,6 +1,4 @@
 import http from "http";
-import { URL } from "url";
-import { ObjectType } from "./types";
 
 function errorTemplate(method: string, url: string, error: Error) {
   let errorMessage;
@@ -35,13 +33,13 @@ function errorTemplate(method: string, url: string, error: Error) {
 `;
 }
 
-function serve(port: number, render: (url: URL) => Promise<[number, ObjectType, string]>) {
+function serve(
+  port: number,
+  render: (req: http.IncomingMessage, res: http.ServerResponse) => void
+) {
   const server = http.createServer(async (req: http.IncomingMessage, res: http.ServerResponse) => {
-    const url = new URL(req.url as string, `http://${req.headers.host}`);
     try {
-      const [status, headers, body] = await render(url);
-      res.writeHead(status, headers);
-      res.end(body);
+      render(req, res);
     } catch (e) {
       res.writeHead(500);
       res.end(errorTemplate(req.method as string, req.url as string, e));

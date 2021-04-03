@@ -1,6 +1,7 @@
 import path from "path";
 import ejs from "ejs";
 import marked from "marked";
+import send from "send";
 import templates from "./templates";
 import fm from "./fm";
 import fs from "./fs";
@@ -250,21 +251,26 @@ async function cmdServe(argv: ServeCmdArgvType) {
     }
   });
 
-  server.serve(argv.port, async (url) => {
+  server.serve(argv.port, async (req, res) => {
+    const url = new URL(req.url as string, `http://${req.headers.host}`);
+
     const urlPath = url.pathname === "/" ? url.pathname : url.pathname.replace(/\/+$/, "");
     const page = syte.pages.find((page) => page.urlPath === urlPath);
     if (page !== undefined) {
       const body = renderPage(page, syte.app, syte.layouts, syte.pages, { urlPathPrefix: "/" });
-      return [200, { "Content-Type": "text/html" }, body];
+      res.writeHead(200, { "Content-Type": "text/html; charset=UTF-8" });
+      res.end(body);
+      return;
     }
 
     const staticFilePath = path.join(projectPath, "static", url.pathname);
     if (await fs.exists(staticFilePath)) {
-      const file = await fs.read(path.join(projectPath, "static", url.pathname));
-      return [200, {}, file.contents];
+      send(req, staticFilePath).pipe(res);
+      return;
     }
 
-    return [404, {}, "Not Found"];
+    res.writeHead(404);
+    res.end("Not Found");
   });
 }
 
