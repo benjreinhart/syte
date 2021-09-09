@@ -1,6 +1,7 @@
 import path from "path";
 import ejs from "ejs";
 import marked from "marked";
+import RSS from "rss";
 import send from "send";
 import templates from "./templates";
 import fm from "./fm";
@@ -319,13 +320,35 @@ async function cmdBuild(argv: BuildCmdArgvType) {
     });
   };
 
+  const buildRSSFeed = () => {
+    const rssPath = path.join(outputPath, "rss.xml");
+    const feed = new RSS({
+      title: appContext.title,
+      description: appContext.title,
+      feed_url: rssPath,
+      site_url: outputPath,
+      pubDate: new Date(),
+      ttl: 60,
+    });
+    pages.map(async (page) => {
+      const pageOutputDirPath = path.join(outputPath, page.urlPath);
+      feed.item({
+        title: page.context.title,
+        description: `${page.context.title} Writes With`,
+        url: pageOutputDirPath,
+        date: page.context.date,
+      })
+    });
+    return fs.write(rssPath, feed.xml({indent: true}))
+  };
+
   const copyStatic = () => {
     const source = path.join(projectPath, "static");
     const destination = path.join(outputPath);
     return fs.copy(source, destination);
   };
 
-  await Promise.all([copyStatic(), ...buildPages()]);
+  await Promise.all([copyStatic(), buildRSSFeed(), ...buildPages()]);
 }
 
 export default {
