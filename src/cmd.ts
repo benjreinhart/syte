@@ -334,7 +334,7 @@ async function cmdBuild(argv: BuildCmdArgvType) {
       const pageOutputDirPath = path.join(outputPath, page.urlPath);
       feed.item({
         title: page.context.title,
-        description: `${page.context.title} Writes With`,
+        description: page.context.title,
         url: pageOutputDirPath,
         date: page.context.date,
       })
