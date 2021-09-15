@@ -330,16 +330,19 @@ async function cmdBuild(argv: BuildCmdArgvType) {
       pubDate: new Date(),
       ttl: 60,
     });
-    pages.map(async (page) => {
-      const pageOutputDirPath = path.join(outputPath, page.urlPath);
-      feed.item({
-        title: page.context.title,
-        description: page.context.title,
-        url: pageOutputDirPath,
-        date: page.context.date,
-      })
-    });
-    return fs.write(rssPath, feed.xml({indent: true}))
+    pages
+      .filter((page) => page.context.date && page.context.title)
+      .sort((a, b) => new Date(b.context.date).getTime() - new Date(a.context.date).getTime())
+      .map((page) => {
+        const pageOutputDirPath = path.join(outputPath, page.urlPath);
+        feed.item({
+          title: page.context.title,
+          description: page.context.title,
+          url: pageOutputDirPath,
+          date: page.context.date,
+        });
+      });
+    return fs.write(rssPath, feed.xml({ indent: true }));
   };
 
   const copyStatic = () => {
