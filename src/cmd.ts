@@ -326,7 +326,7 @@ async function cmdBuild(argv: BuildCmdArgvType) {
       title: appContext.title,
       description: appContext.title,
       feed_url: rssPath,
-      site_url: outputPath,
+      site_url: `${appContext.base_url}/rss.xml`,
       pubDate: new Date(),
       ttl: 60,
     });
@@ -338,7 +338,7 @@ async function cmdBuild(argv: BuildCmdArgvType) {
         feed.item({
           title: page.context.title,
           description: page.context.title,
-          url: pageOutputDirPath,
+          url: `${appContext.base_url}${page.urlPath}`,
           date: page.context.date,
         });
       });
@@ -351,7 +351,12 @@ async function cmdBuild(argv: BuildCmdArgvType) {
     return fs.copy(source, destination);
   };
 
-  await Promise.all([copyStatic(), buildRSSFeed(), ...buildPages()]);
+  const promises = [copyStatic(), ...buildPages()];
+  if (appContext.base_url) {
+    promises.push(buildRSSFeed())
+  }
+
+  await Promise.all(promises);
 }
 
 export default {
