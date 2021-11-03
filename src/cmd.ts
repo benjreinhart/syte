@@ -22,6 +22,10 @@ function urlPathJoin(...paths: string[]) {
   return `/${path}`;
 }
 
+function getLinkHref(link: string, appBaseURL: string): string {
+  return link.startsWith("http") ? link : `${appBaseURL}${link}`;
+}
+
 const URI_RE = new RegExp("^[-a-z]+://|^(?:cid|data):|^//");
 
 function buildPathTo(pathRoot: string) {
@@ -159,16 +163,12 @@ function renderPageContentsForRSS(
 ) {
   const renderer =  new marked.Renderer();
   renderer.link = (href, title, text) => {
-    if (href && href.startsWith("/")) {
-      return `<a href="${appBaseURL}${href}">${text}</a>`;
-    }
-    return `<a href="${href}">${text}</a>`;
+    const absoluteHref = getLinkHref(href as string, appBaseURL);
+    return `<a href="${absoluteHref}">${text}</a>`
   }
   renderer.image = (href, title, text) => {
-    if (href && href.startsWith("/")) {
-      return `<img src="${appBaseURL}${href}" alt=${text}>`;
-    }
-    return `<img src="${href} alt=${text}">`;
+    const absoluteHref = getLinkHref(href as string, appBaseURL);
+    return `<img src="${absoluteHref} alt=${text}">`;
   }
   marked.setOptions({ renderer });
   return marked(page.contents);
