@@ -23,7 +23,7 @@ function urlPathJoin(...paths: string[]) {
 }
 
 function getLinkHref(link: string, appBaseURL: string): string {
-  return link.startsWith("http") ? link : `${appBaseURL}${link}`;
+  return new URL(link, appBaseURL).href;
 }
 
 const URI_RE = new RegExp("^[-a-z]+://|^(?:cid|data):|^//");
