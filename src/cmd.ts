@@ -165,11 +165,10 @@ function renderPageContentsForRSS(
     return `<a href="${href}">${text}</a>`;
   }
   renderer.image = (href, title, text) => {
-    console.log("hello!", href)
     if (href && href.startsWith("/")) {
-      return `<img src="${appBaseURL}${href}">`;
+      return `<img src="${appBaseURL}${href}" alt=${text}>`;
     }
-    return `<img src="${href}">`;
+    return `<img src="${href} alt=${text}">`;
   }
   marked.setOptions({ renderer });
   return marked(page.contents);
