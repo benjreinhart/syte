@@ -153,6 +153,28 @@ function renderPage(
   return ejs.render(layout.contents, context);
 }
 
+function renderPageContentsForRSS(
+  page: PageType,
+  appBaseURL: string,
+) {
+  const renderer =  new marked.Renderer();
+  renderer.link = (href, title, text) => {
+    if (href && href.startsWith("/")) {
+      return `<a href="${appBaseURL}${href}">${text}</a>`;
+    }
+    return `<a href="${href}">${text}</a>`;
+  }
+  renderer.image = (href, title, text) => {
+    console.log("hello!", href)
+    if (href && href.startsWith("/")) {
+      return `<img src="${appBaseURL}${href}">`;
+    }
+    return `<img src="${href}">`;
+  }
+  marked.setOptions({ renderer });
+  return marked(page.contents);
+}
+
 interface NewCmdArgvType {
   path: string;
 }
@@ -334,10 +356,10 @@ async function cmdBuild(argv: BuildCmdArgvType) {
       .filter((page) => page.context.date && page.context.title)
       .sort((a, b) => new Date(b.context.date).getTime() - new Date(a.context.date).getTime())
       .map((page) => {
-        const pageOutputDirPath = path.join(outputPath, page.urlPath);
+        const contents = renderPageContentsForRSS(page, appContext.base_url)
         feed.item({
           title: page.context.title,
-          description: page.context.title,
+          description: contents,
           url: `${appContext.base_url}${page.urlPath}`,
           date: page.context.date,
         });
