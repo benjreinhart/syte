@@ -140,5 +140,3 @@ If your app config contains a `base_url` entry, then a `rss.xml` RSS feed is gen
 title: "My great post"
 date: "2021-09-02"
 ```
-
-Also, the feed items do not yet contain the contents of the posts.
