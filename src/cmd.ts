@@ -22,6 +22,10 @@ function urlPathJoin(...paths: string[]) {
   return `/${path}`;
 }
 
+function getLinkHref(link: string, appBaseURL: string): string {
+  return new URL(link, appBaseURL).href;
+}
+
 const URI_RE = new RegExp("^[-a-z]+://|^(?:cid|data):|^//");
 
 function buildPathTo(pathRoot: string) {
@@ -151,6 +155,23 @@ function renderPage(
   }
 
   return ejs.render(layout.contents, context);
+}
+
+function renderPageContentsForRSS(
+  page: PageType,
+  appBaseURL: string,
+) {
+  const renderer =  new marked.Renderer();
+  renderer.link = (href, title, text) => {
+    const absoluteHref = getLinkHref(href as string, appBaseURL);
+    return `<a href="${absoluteHref}">${text}</a>`
+  }
+  renderer.image = (href, title, text) => {
+    const absoluteHref = getLinkHref(href as string, appBaseURL);
+    return `<img src="${absoluteHref} alt=${text}">`;
+  }
+  marked.setOptions({ renderer });
+  return marked(page.contents);
 }
 
 interface NewCmdArgvType {
@@ -334,10 +355,10 @@ async function cmdBuild(argv: BuildCmdArgvType) {
       .filter((page) => page.context.date && page.context.title)
       .sort((a, b) => new Date(b.context.date).getTime() - new Date(a.context.date).getTime())
       .map((page) => {
-        const pageOutputDirPath = path.join(outputPath, page.urlPath);
+        const contents = renderPageContentsForRSS(page, appContext.base_url)
         feed.item({
           title: page.context.title,
-          description: page.context.title,
+          description: contents,
           url: `${appContext.base_url}${page.urlPath}`,
           date: page.context.date,
         });
