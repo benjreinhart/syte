@@ -168,7 +168,7 @@ function renderPageContentsForRSS(
   }
   renderer.image = (href, title, text) => {
     const absoluteHref = getLinkHref(href as string, appBaseURL);
-    return `<img src="${absoluteHref} alt=${text}">`;
+    return `<img src="${absoluteHref}" alt="${text}">`;
   }
   marked.setOptions({ renderer });
   return marked(page.contents);
