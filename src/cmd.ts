@@ -428,7 +428,6 @@ async function cmdBuild(argv: BuildCmdArgvType) {
             { "itunes:duration": page.context.episode_duration },
             { "itunes:summary": page.context.episode_summary },
             { "itunes:subtitle": page.context.episode_summary },
-            { "itunes:order": page.context.episode_number },
             { "itunes:explicit": page.context.episode_explict },
             {
               "itunes:image": {
