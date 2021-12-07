@@ -370,7 +370,7 @@ async function cmdBuild(argv: BuildCmdArgvType) {
     const podcastRssPath = path.join(outputPath, PODCAST_RSS_FILENAME);
     const feed = new RSS({
       title: appContext.title,
-      description: appContext.title,
+      description: appContext.podcast_subtitle,
       categories: [appContext.podcast_category],
       language: appContext.podcast_language || "en-us",
       feed_url: podcastRssPath,
@@ -411,17 +411,17 @@ async function cmdBuild(argv: BuildCmdArgvType) {
       ],
     });
     pages
-      .filter((page) => page.context.date && page.context.title && page.context.audio_url)
+      .filter((page) => page.context.date && page.context.title && page.context.episode_url)
       .sort((a, b) => new Date(b.context.date).getTime() - new Date(a.context.date).getTime())
       .map((page) => {
         const contents = renderPageContentsForRSS(page, appContext.base_url);
         feed.item({
-          title: page.context.podcastEpisodeTitle,
+          title: page.context.title,
           description: contents, // displays as "Show Notes"
           url: `${appContext.base_url}${page.urlPath}`,
           date: page.context.date,
           categories: [appContext.podcast_category],
-          enclosure: { url: page.context.podcastEpisodeURL },
+          enclosure: { url: page.context.episode_url, size: page.context.episode_length },
           custom_elements: [
             { "itunes:author": appContext.podcast_author },
             { "itunes:title": page.context.title },
@@ -429,7 +429,7 @@ async function cmdBuild(argv: BuildCmdArgvType) {
             { "itunes:summary": page.context.episode_summary },
             { "itunes:subtitle": page.context.episode_summary },
             { "itunes:order": page.context.episode_number },
-            { "itunes:explicit": page.context.episode_explicit },
+            { "itunes:explicit": page.context.episode_explict },
             {
               "itunes:image": {
                 _attr: {
@@ -452,7 +452,7 @@ async function cmdBuild(argv: BuildCmdArgvType) {
   const promises = [copyStatic(), ...buildPages()];
   if (appContext.base_url) {
     promises.push(buildRssFeed());
-    if (appContext.podcast) {
+    if (appContext.podcast_author) {
       promises.push(buildPodcastRssFeed());
     }
   }
