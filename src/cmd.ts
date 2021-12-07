@@ -28,6 +28,9 @@ function getLinkHref(link: string, appBaseURL: string): string {
 
 const URI_RE = new RegExp("^[-a-z]+://|^(?:cid|data):|^//");
 
+const RSS_FILENAME = "rss.xml";
+const PODCAST_RSS_FILENAME = "podcast.xml";
+
 function buildPathTo(pathRoot: string) {
   return (source: string | PageType) => {
     if (isString(source)) {
@@ -157,19 +160,16 @@ function renderPage(
   return ejs.render(layout.contents, context);
 }
 
-function renderPageContentsForRSS(
-  page: PageType,
-  appBaseURL: string,
-) {
-  const renderer =  new marked.Renderer();
+function renderPageContentsForRSS(page: PageType, appBaseURL: string) {
+  const renderer = new marked.Renderer();
   renderer.link = (href, title, text) => {
     const absoluteHref = getLinkHref(href as string, appBaseURL);
-    return `<a href="${absoluteHref}">${text}</a>`
-  }
+    return `<a href="${absoluteHref}">${text}</a>`;
+  };
   renderer.image = (href, title, text) => {
     const absoluteHref = getLinkHref(href as string, appBaseURL);
     return `<img src="${absoluteHref}" alt="${text}">`;
-  }
+  };
   marked.setOptions({ renderer });
   return marked(page.contents);
 }
@@ -341,13 +341,13 @@ async function cmdBuild(argv: BuildCmdArgvType) {
     });
   };
 
-  const buildRSSFeed = () => {
-    const rssPath = path.join(outputPath, "rss.xml");
+  const buildRssFeed = () => {
+    const rssPath = path.join(outputPath, RSS_FILENAME);
     const feed = new RSS({
       title: appContext.title,
       description: appContext.title,
       feed_url: rssPath,
-      site_url: `${appContext.base_url}/rss.xml`,
+      site_url: `${appContext.base_url}/${RSS_FILENAME}`,
       pubDate: new Date(),
       ttl: 60,
     });
@@ -355,7 +355,7 @@ async function cmdBuild(argv: BuildCmdArgvType) {
       .filter((page) => page.context.date && page.context.title)
       .sort((a, b) => new Date(b.context.date).getTime() - new Date(a.context.date).getTime())
       .map((page) => {
-        const contents = renderPageContentsForRSS(page, appContext.base_url)
+        const contents = renderPageContentsForRSS(page, appContext.base_url);
         feed.item({
           title: page.context.title,
           description: contents,
@@ -366,6 +366,83 @@ async function cmdBuild(argv: BuildCmdArgvType) {
     return fs.write(rssPath, feed.xml({ indent: true }));
   };
 
+  const buildPodcastRssFeed = () => {
+    const podcastRssPath = path.join(outputPath, PODCAST_RSS_FILENAME);
+    const feed = new RSS({
+      title: appContext.title,
+      description: appContext.title,
+      categories: [appContext.podcast_category],
+      language: appContext.podcast_language || "en-us",
+      feed_url: podcastRssPath,
+      site_url: `${appContext.base_url}/${PODCAST_RSS_FILENAME}`,
+      pubDate: new Date(),
+      generator: "Syte",
+      ttl: 60,
+      custom_namespaces: {
+        itunes: "http://www.itunes.com/dtds/podcast-1.0.dtd",
+      },
+      custom_elements: [
+        { "itunes:subtitle": appContext.podcast_subtitle },
+        { "itunes:author": appContext.podcast_author },
+        { "itunes:summary": appContext.podcast_summary },
+        { "itunes:explicit": appContext.podcast_explicit },
+        {
+          "itunes:owner": [
+            { "itunes:name": appContext.podcast_author },
+            { "itunes:email": appContext.podcast_email },
+          ],
+        },
+        {
+          "itunes:image": {
+            _attr: {
+              href: appContext.podcast_img_url,
+            },
+          },
+        },
+        {
+          "itunes:category": [
+            {
+              _attr: {
+                text: appContext.podcast_category,
+              },
+            },
+          ],
+        },
+      ],
+    });
+    pages
+      .filter((page) => page.context.date && page.context.title && page.context.audio_url)
+      .sort((a, b) => new Date(b.context.date).getTime() - new Date(a.context.date).getTime())
+      .map((page) => {
+        const contents = renderPageContentsForRSS(page, appContext.base_url);
+        feed.item({
+          title: page.context.podcastEpisodeTitle,
+          description: contents, // displays as "Show Notes"
+          url: `${appContext.base_url}${page.urlPath}`,
+          date: page.context.date,
+          categories: [appContext.podcast_category],
+          enclosure: { url: page.context.podcastEpisodeURL },
+          custom_elements: [
+            { "itunes:author": appContext.podcast_author },
+            { "itunes:title": page.context.title },
+            { "itunes:duration": page.context.episode_duration },
+            { "itunes:summary": page.context.episode_summary },
+            { "itunes:subtitle": page.context.episode_summary },
+            { "itunes:order": page.context.episode_number },
+            { "itunes:explicit": page.context.episode_explicit },
+            {
+              "itunes:image": {
+                _attr: {
+                  href: appContext.podcast_img_url,
+                },
+              },
+            },
+          ],
+        });
+      });
+    return fs.write(podcastRssPath, feed.xml({ indent: true }));
+  };
+
   const copyStatic = () => {
     const source = path.join(projectPath, "static");
     const destination = path.join(outputPath);
@@ -374,7 +451,10 @@ async function cmdBuild(argv: BuildCmdArgvType) {
 
   const promises = [copyStatic(), ...buildPages()];
   if (appContext.base_url) {
-    promises.push(buildRSSFeed())
+    promises.push(buildRssFeed());
+    if (appContext.podcast) {
+      promises.push(buildPodcastRssFeed());
+    }
   }
 
   await Promise.all(promises);
