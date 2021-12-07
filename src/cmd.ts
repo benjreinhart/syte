@@ -346,8 +346,8 @@ async function cmdBuild(argv: BuildCmdArgvType) {
     const feed = new RSS({
       title: appContext.title,
       description: appContext.title,
-      feed_url: rssPath,
-      site_url: `${appContext.base_url}/${RSS_FILENAME}`,
+      feed_url: `${appContext.base_url}/${RSS_FILENAME}`,
+      site_url: appContext.base_url,
       pubDate: new Date(),
       ttl: 60,
     });
@@ -373,8 +373,8 @@ async function cmdBuild(argv: BuildCmdArgvType) {
       description: appContext.podcast_subtitle,
       categories: [appContext.podcast_category],
       language: appContext.podcast_language || "en-us",
-      feed_url: podcastRssPath,
-      site_url: `${appContext.base_url}/${PODCAST_RSS_FILENAME}`,
+      feed_url: `${appContext.base_url}/${PODCAST_RSS_FILENAME}`,
+      site_url: appContext.base_url,
       pubDate: new Date(),
       generator: "Syte",
       ttl: 60,
