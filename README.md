@@ -140,3 +140,37 @@ If your app config contains a `base_url` entry, then a `rss.xml` RSS feed is gen
 title: "My great post"
 date: "2021-09-02"
 ```
+
+### Podcast RSS Feed
+
+Syte can also generate a podcast RSS feed with the required fields for the iTunes podcast directory. Here are the required fields in app config (with some examples):
+
+```
+title: My Awesome Podcast
+base_url: https://example.com
+podcast_category: Technology
+podcast_language: en-us
+podcast_subtitle: The greatest podcast of all time
+podcast_author: Jane Smith
+podcast_summary: The greatest podcast of all time, featuring Jane Smith
+podcast_explicit: 'no'
+podcast_email: foo@example.com
+podcast_img_url: https://example.com/logo.jpg
+```
+
+And each page will need the following frontmatter (with examples):
+
+```
+title: "1: This is an episode title"
+date: "2021-12-07"
+episode_url: 'https://example/audio/001_this_is_an_episode.mp3'
+episode_duration: '4960'
+episode_length: '99215166'
+episode_summary: This episode is about being awesome.
+episode_explict: 'yes'
+```
+
+The only slightly confusing fields here are likely `episode_duration` and `episode_length`. Episode duration refers to the length of your episode's mp3 file in seconds and can be calculated with this command `fprobe -show_entries stream=duration -of compact=p=0:nk=1 -v fatal MY_AWESOME_EPISODE.mp3`. Episode length refers to the number of bytes of your episode's mp3 file and can be calculated with `wc -c < MY_AWESOME_EPISODE.mp3`.
+
+The "show notes" for each episode will be generated from the page contents (after the frontmatter).
+
