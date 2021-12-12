@@ -170,7 +170,7 @@ episode_summary: This episode is about being awesome.
 episode_explict: 'yes'
 ```
 
-The only slightly confusing fields here are likely `episode_duration` and `episode_length`. Episode duration refers to the length of your episode's mp3 file in seconds and can be calculated with this command `fprobe -show_entries stream=duration -of compact=p=0:nk=1 -v fatal MY_AWESOME_EPISODE.mp3`. Episode length refers to the number of bytes of your episode's mp3 file and can be calculated with `wc -c < MY_AWESOME_EPISODE.mp3`.
+The only slightly confusing fields here are likely `episode_duration` and `episode_length`. Episode duration refers to the length of your episode's mp3 file in seconds and can be calculated with this command `ffprobe -show_entries stream=duration -of compact=p=0:nk=1 -v fatal MY_AWESOME_EPISODE.mp3`. Episode length refers to the number of bytes of your episode's mp3 file and can be calculated with `wc -c < MY_AWESOME_EPISODE.mp3`.
 
 The "show notes" for each episode will be generated from the page contents (after the frontmatter).
 
