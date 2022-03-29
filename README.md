@@ -176,7 +176,7 @@ The "show notes" for each episode will be generated from the page contents (afte
 
 ### Farcaster auto-cast new posts
 
-Syte can also "cast" your pages to [Farcaster](https://farcaster.xyz) - a decentralized social networking protocol. You'll need a Farcaster username and its [corresponding private key](https://farcasterxyz.notion.site/Find-your-Farcaster-private-key-c409a0c2b036467d8f5172ff8df3bc9d).
+Syte can also "cast" your pages to [Farcaster](https://farcaster.xyz) - a "[sufficiently decentralized](https://www.varunsrinivasan.com/2022/01/11/sufficient-decentralization-for-social-networks)" social networking protocol. You'll need a Farcaster username and its [corresponding private key](https://farcasterxyz.notion.site/Find-your-Farcaster-private-key-c409a0c2b036467d8f5172ff8df3bc9d).
 
 You casts will consist of the page title and the page url, and should only send casts for new posts (or if the title/url changes), so this will run as part of your Syte's deploy process (like the RSS feed generation).
 
