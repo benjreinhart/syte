@@ -41,6 +41,7 @@
   "dependencies": {
     "chokidar": "^3.5.1",
     "ejs": "^3.1.6",
+    "farcaster-feed": "^0.2.5",
     "fast-glob": "^3.2.5",
     "js-yaml": "^3.14.1",
     "marked": "^2.0.0",

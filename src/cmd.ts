@@ -1,5 +1,6 @@
 import path from "path";
 import ejs from "ejs";
+import { FarcasterFeed } from "farcaster-feed";
 import marked from "marked";
 import RSS from "rss";
 import send from "send";
@@ -366,6 +367,15 @@ async function cmdBuild(argv: BuildCmdArgvType) {
     return fs.write(rssPath, feed.xml({ indent: true }));
   };
 
+  const castPostsToFarcaster = (username: string, privateKey: string) => {
+    const farcaster = new FarcasterFeed(username, privateKey);
+    const posts = pages
+      .filter((page) => page.context.title && page.context.date)
+      .sort((a, b) => new Date(a.context.date).getTime() - new Date(b.context.date).getTime())
+      .map((page) => ({ title: page.context.title, url: `${appContext.base_url}${page.urlPath}` }));
+    return farcaster.castPosts(posts);
+  };
+
   const buildPodcastRssFeed = () => {
     const podcastRssPath = path.join(outputPath, PODCAST_RSS_FILENAME);
     const feed = new RSS({
@@ -453,6 +463,11 @@ async function cmdBuild(argv: BuildCmdArgvType) {
     promises.push(buildRssFeed());
     if (appContext.podcast_author) {
       promises.push(buildPodcastRssFeed());
+    }
+    if (appContext.farcaster_username && process.env.FARCASTER_PRIVATE_KEY) {
+      promises.push(
+        castPostsToFarcaster(appContext.farcaster_username, process.env.FARCASTER_PRIVATE_KEY)
+      );
     }
   }
 
