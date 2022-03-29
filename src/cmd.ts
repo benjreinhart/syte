@@ -1,6 +1,6 @@
 import path from "path";
 import ejs from "ejs";
-import { FarcasterFeed, Post } from "farcaster-feed";
+import { FarcasterFeed } from "farcaster-feed";
 import marked from "marked";
 import RSS from "rss";
 import send from "send";
@@ -369,17 +369,11 @@ async function cmdBuild(argv: BuildCmdArgvType) {
 
   const castPostsToFarcaster = (username: string, privateKey: string) => {
     const farcaster = new FarcasterFeed(username, privateKey);
-    pages
+    const posts = pages
       .filter((page) => page.context.title && page.context.date)
       .sort((a, b) => new Date(a.context.date).getTime() - new Date(b.context.date).getTime())
-      .forEach((page) => {
-        const post: Post = {
-          title: page.context.title,
-          url: `${appContext.base_url}${page.urlPath}`,
-        };
-        farcaster.addPost(post);
-      });
-    return farcaster.castPosts();
+      .map((page) => ({ title: page.context.title, url: `${appContext.base_url}${page.urlPath}` }));
+    return farcaster.castPosts(posts);
   };
 
   const buildPodcastRssFeed = () => {
