@@ -192,5 +192,5 @@ title: "My awesome page"
 date: "2022-03-28"
 ```
 
-Finally, you'll need to add an environment variable called `FARCASTER_PRIVATE_KEY` with your Farcaster username's private key.
+Finally, you'll need to add an environment variable called `FARCASTER_MNEMONIC` with your Farcaster username's mnemonic / seed phrase. This is not ideal and will be likely improved with upcoming Farcaster protocol features, but this does work for now.
 

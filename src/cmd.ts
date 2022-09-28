@@ -464,9 +464,9 @@ async function cmdBuild(argv: BuildCmdArgvType) {
     if (appContext.podcast_author) {
       promises.push(buildPodcastRssFeed());
     }
-    if (appContext.farcaster_username && process.env.FARCASTER_PRIVATE_KEY) {
+    if (appContext.farcaster_username && process.env.FARCASTER_MNEMONIC) {
       promises.push(
-        castPostsToFarcaster(appContext.farcaster_username, process.env.FARCASTER_PRIVATE_KEY)
+        castPostsToFarcaster(appContext.farcaster_username, process.env.FARCASTER_MNEMONIC)
       );
     }
   }
