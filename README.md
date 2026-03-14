@@ -174,23 +174,4 @@ The only slightly confusing fields here are likely `episode_duration` and `episo
 
 The "show notes" for each episode will be generated from the page contents (after the frontmatter).
 
-### Farcaster auto-cast new posts
-
-Syte can also "cast" your pages to [Farcaster](https://farcaster.xyz) - a "[sufficiently decentralized](https://www.varunsrinivasan.com/2022/01/11/sufficient-decentralization-for-social-networks)" social networking protocol. You'll need a Farcaster username and its [corresponding private key](https://farcasterxyz.notion.site/Find-your-Farcaster-private-key-c409a0c2b036467d8f5172ff8df3bc9d).
-
-You casts will consist of the page title and the page url, and should only send casts for new posts (or if the title/url changes), so this will run as part of your Syte's deploy process (like the RSS feed generation).
-
-To auto-cast, your app config will need:
-```
-base_url: https://example.com
-farcaster_username: whatrocks
-```
-
-You post frontmatter must include:
-```
-title: "My awesome page"
-date: "2022-03-28"
-```
-
-Finally, you'll need to add an environment variable called `FARCASTER_MNEMONIC` with your Farcaster username's mnemonic / seed phrase. This is not ideal and will be likely improved with upcoming Farcaster protocol features, but this does work for now.
 

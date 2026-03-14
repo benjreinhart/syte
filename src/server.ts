@@ -42,7 +42,7 @@ function serve(
       render(req, res);
     } catch (e) {
       res.writeHead(500);
-      res.end(errorTemplate(req.method as string, req.url as string, e));
+      res.end(errorTemplate(req.method as string, req.url as string, e as Error));
     }
   });
 
